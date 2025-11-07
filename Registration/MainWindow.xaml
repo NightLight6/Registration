@@ -1,0 +1,19 @@
+﻿<Window x:Class="Registration.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PR-6" Height="710" Width="1000" MinHeight="710" MinWidth="1000"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="#8b00ff">
+            <Button x:Name="btnBack" Content="Назад" HorizontalAlignment="Right" Cursor="Hand" Click="btnBack_Click"/>
+            <Image HorizontalAlignment="Left" Margin="10,7,0,7" Width="45"/>
+        </Grid>
+
+        <Frame x:Name="fr_content" Grid.Row="1" NavigationUIVisibility="Hidden"/>
+    </Grid>
+</Window>

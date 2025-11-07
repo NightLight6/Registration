@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="517afdd22d4a45929ef6479d85a09993" Name="Diagram1" ZoomLevel="67">
+        <EntityTypeShape EntityType="BeermagModel.BeverageMaterialRequirements" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.BeverageTypes" Width="1.5" PointX="3" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.FinishedBatches" Width="1.5" PointX="9.75" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.Orders" Width="1.5" PointX="5.25" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.ProductionTaskMaterials" Width="1.5" PointX="9.75" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.ProductionTasks" Width="1.5" PointX="7.5" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.RawMaterials" Width="1.5" PointX="7.5" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.Roles" Width="1.5" PointX="0.75" PointY="8.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.Shipments" Width="1.5" PointX="12" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="11.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.TaxReports" Width="1.5" PointX="5.25" PointY="10.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BeermagModel.Users" Width="1.5" PointX="3" PointY="7.375" IsExpanded="true" />
+        <AssociationConnector Association="BeermagModel.FK_BMR_BeverageTypes" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_BMR_RawMaterials" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_Orders_BeverageTypes" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_FinishedBatches_ProductionTasks" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_Shipments_FinishedBatches" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_Orders_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_ProductionTasks_Orders" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_Shipments_Orders" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_PTM_ProductionTasks" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_PTM_RawMaterials" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_ProductionTasks_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_Users_Roles" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_Shipments_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="BeermagModel.FK_TaxReports_Users" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
