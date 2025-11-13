@@ -4,36 +4,36 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
+using System.Windows.Threading;
 
 namespace Registration.Pages
 {
     public partial class AuthPage : Page
     {
-        private int _clickCount = 0;
+        private int _failedAttempts = 0;
+        private DispatcherTimer _blockTimer;
         private string _captchaText = "";
 
         public AuthPage()
         {
             InitializeComponent();
-            tblCaptcha.Visibility = System.Windows.Visibility.Collapsed;
-            tbCaptcha.Visibility = System.Windows.Visibility.Collapsed;
-        }
-
-        private void btnEnterGuest_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService?.Navigate(new ClientPage(null, "Client"));
+            tbBlockTimer.Visibility = Visibility.Collapsed;
         }
 
         private void btnEnter_Click(object sender, RoutedEventArgs e)
         {
-            _clickCount++;
+            ClearCaptcha();
+            if (_blockTimer != null && _blockTimer.IsEnabled)
+            {
+                return;
+            }
+
             string login = tbLogin.Text.Trim();
             string password = tbPassword.Password.Trim();
 
-            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show("Введите логин и пароль.");
+                MessageBox.Show("Пожалуйста, введите логин и пароль.");
                 return;
             }
 
@@ -43,77 +43,112 @@ namespace Registration.Pages
             {
                 var user = context.Users.FirstOrDefault(u => u.Login == login && u.PasswordHash == passwordHash);
 
-                if (_clickCount == 1)
+                if (user != null)
                 {
-                    if (user != null)
-                    {
-                        var role = context.Roles.FirstOrDefault(r => r.RoleID == user.RoleID);
-                        string roleName = role?.RoleName ?? "Client";
-                        MessageBox.Show($"Вы вошли под: {roleName}");
-                        LoadPage(user, roleName);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Вы ввели логин или пароль неверно!");
-                        GenerateCaptcha();
-                        tbPassword.Clear(); // Очистка пароля
-                    }
+                    _failedAttempts = 0;
+                    var role = context.Roles.FirstOrDefault(r => r.RoleID == user.RoleID);
+                    string roleName = role?.RoleName ?? "Client";
+                    MessageBox.Show($"Вы вошли под: {roleName}");
                 }
-                else if (_clickCount > 1)
+                else
                 {
-                    if (user != null && tbCaptcha.Text == _captchaText)
+                    _failedAttempts++;
+
+                    if (_failedAttempts >= 3)
                     {
-                        var role = context.Roles.FirstOrDefault(r => r.RoleID == user.RoleID);
-                        string roleName = role?.RoleName ?? "Client";
-                        MessageBox.Show($"Вы вошли под: {roleName}");
-                        LoadPage(user, roleName);
+                        BlockUI();
                     }
                     else
                     {
-                        MessageBox.Show("Неверная капча или данные!");
+                        if (_failedAttempts >= 1)
+                        {
+                            ShowCaptcha();
+                        }
+
+                        MessageBox.Show("Неверный логин или пароль.");
                         tbPassword.Clear();
                     }
                 }
             }
         }
 
-        private void GenerateCaptcha()
+        private void ShowCaptcha()
         {
             _captchaText = CaptchaGenerator.GenerateCaptchaText(6);
             tblCaptcha.Text = _captchaText;
             tblCaptcha.Visibility = Visibility.Visible;
             tbCaptcha.Visibility = Visibility.Visible;
-            tblCaptcha.TextDecorations = TextDecorations.Strikethrough;
         }
 
-        private void LoadPage(Users user, string roleName)
+        private void BlockUI()
         {
-            _clickCount = 0;
+            tbLogin.IsEnabled = false;
+            tbPassword.IsEnabled = false;
+            tbCaptcha.IsEnabled = false;
+            btnEnter.IsEnabled = false;
+            btnEnterGuest.IsEnabled = false;
+
+            int secondsLeft = 10;
+            tbBlockTimer.Text = $"Заблокировано на {secondsLeft} секунд...";
+            tbBlockTimer.Visibility = Visibility.Visible;
+
+            _blockTimer = new DispatcherTimer();
+            _blockTimer.Interval = TimeSpan.FromSeconds(1);
+            _blockTimer.Tick += (s, e) =>
+            {
+                secondsLeft--;
+                tbBlockTimer.Text = $"Заблокировано на {secondsLeft} секунд...";
+
+                if (secondsLeft <= 0)
+                {
+                    UnBlockUI();
+                }
+            };
+            _blockTimer.Start();
+        }
+
+        private void UnBlockUI()
+        {
+            _blockTimer?.Stop();
+            tbBlockTimer.Visibility = Visibility.Collapsed;
+
+            tbLogin.IsEnabled = true;
+            tbPassword.IsEnabled = true;
+            tbCaptcha.IsEnabled = true;
+            btnEnter.IsEnabled = true;
+            btnEnterGuest.IsEnabled = true;
+
+            _failedAttempts = 0;
+            HideCaptcha();
+        }
+
+        private void HideCaptcha()
+        {
             tblCaptcha.Visibility = Visibility.Collapsed;
             tbCaptcha.Visibility = Visibility.Collapsed;
             tbCaptcha.Clear();
-            tbLogin.Clear();
-            tbPassword.Clear();
+        }
 
-            Page nextPage;
-            if (roleName == "Manager")
-                nextPage = new ManagerPage(user, roleName);
-            else if (roleName == "Production")
-                nextPage = new ProductionPage(user, roleName);
-            else if (roleName == "Warehouse")
-                nextPage = new WarehousePage(user, roleName);
-            else if (roleName == "Accountant")
-                nextPage = new AccountantPage(user, roleName);
-            else if (roleName == "Admin")
-                nextPage = new ManagerPage(user, roleName);
-            else
-                nextPage = new ClientPage(user, roleName);
+        private void btnEnterGuest_Click(object sender, RoutedEventArgs e)
+        {
+            if (_blockTimer != null && _blockTimer.IsEnabled)
+            {
+                return;
+            }
+            NavigationService?.Navigate(new ClientPage(null, "Client"));
+        }
 
-            NavigationService?.Navigate(nextPage);
+        private void ClearCaptcha()
+        {
+            tbCaptcha.Clear();
         }
 
         private void BtnGoToRegister_Click(object sender, RoutedEventArgs e)
         {
+            if (_blockTimer != null && _blockTimer.IsEnabled)
+            {
+                return;
+            }
             NavigationService?.Navigate(new RegistrationPage());
         }
     }

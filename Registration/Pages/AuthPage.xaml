@@ -20,9 +20,12 @@
             <TextBlock Text="Пароль:" />
             <PasswordBox x:Name="tbPassword" />
 
-            <TextBlock x:Name="tblCaptcha" Text="Капча" Visibility="Hidden" />
-            <TextBox x:Name="tbCaptcha" Visibility="Hidden" />
+            <TextBlock x:Name="tblCaptcha" Text="Капча" Visibility="Collapsed" />
+            <TextBox x:Name="tbCaptcha" Visibility="Collapsed" />
 
+            <StackPanel x:Name="spBlockTimerContainer" Orientation="Vertical" Height="30" VerticalAlignment="Top">
+                <TextBlock x:Name="tbBlockTimer" Text="" Visibility="Collapsed" Foreground="Red" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </StackPanel>
             <StackPanel Orientation="Horizontal" Height="80" HorizontalAlignment="Center">
                 <Button x:Name="btnEnterGuest" Content="Войти как гость" Click="btnEnterGuest_Click" />
                 <Button x:Name="btnEnter" Content="Войти" Click="btnEnter_Click" />
