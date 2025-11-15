@@ -1,5 +1,6 @@
 ﻿using Registration.Helpers;
 using Registration.Model;
+using Registration.Services;
 using System;
 using System.Linq;
 using System.Windows;
@@ -10,6 +11,8 @@ namespace Registration.Pages
 {
     public partial class AuthPage : Page
     {
+        public static Users CurrentUser { get; set; }
+
         private int _failedAttempts = 0;
         private DispatcherTimer _blockTimer;
         private string _captchaText = "";
@@ -23,8 +26,15 @@ namespace Registration.Pages
         private void btnEnter_Click(object sender, RoutedEventArgs e)
         {
             ClearCaptcha();
+
             if (_blockTimer != null && _blockTimer.IsEnabled)
             {
+                return;
+            }
+
+            if (!TimeHelper.IsWorkTime())
+            {
+                MessageBox.Show("Работа с системой возможна только с 10:00 до 19:00.");
                 return;
             }
 
@@ -46,9 +56,39 @@ namespace Registration.Pages
                 if (user != null)
                 {
                     _failedAttempts = 0;
+
                     var role = context.Roles.FirstOrDefault(r => r.RoleID == user.RoleID);
                     string roleName = role?.RoleName ?? "Client";
+
+                    CurrentUser = user;
+
                     MessageBox.Show($"Вы вошли под: {roleName}");
+
+                    Page nextPage;
+
+                    switch (roleName)
+                    {
+                        case "Manager":
+                            nextPage = new ManagerPage(user, roleName);
+                            break;
+                        case "Production":
+                            nextPage = new ProductionPage(user, roleName);
+                            break;
+                        case "Warehouse":
+                            nextPage = new WarehousePage(user, roleName);
+                            break;
+                        case "Accountant":
+                            nextPage = new AccountantPage(user, roleName);
+                            break;
+                        case "Admin":
+                            nextPage = new ManagerPage(user, roleName);
+                            break;
+                        default:
+                            nextPage = new ClientPage(user, roleName);
+                            break;
+                    }
+
+                    NavigationService?.Navigate(nextPage);
                 }
                 else
                 {

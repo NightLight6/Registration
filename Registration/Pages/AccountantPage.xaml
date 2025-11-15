@@ -10,12 +10,12 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="1"
-               Text="Добро пожаловать, бухгалтерию!"
-               FontSize="24"
-               FontWeight="Bold"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"/>
+        <TextBlock x:Name="tbGreeting" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"
+                   Margin="0,20,0,0"/>
 
         <Border Grid.Row="2" Padding="10" HorizontalAlignment="Right">
             <Button Content="Выйти"

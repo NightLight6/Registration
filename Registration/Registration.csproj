@@ -188,6 +188,7 @@
     <Compile Include="Model\TaxReports.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\TimeHelper.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="Services\UserPassword.cs" />
     <Compile Include="Model\Users.cs">
