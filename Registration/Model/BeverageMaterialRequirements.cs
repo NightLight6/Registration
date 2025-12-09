@@ -16,7 +16,7 @@ namespace Registration.Model
     {
         public int BeverageTypeID { get; set; }
         public int MaterialID { get; set; }
-        public decimal QuantityPerUnit { get; set; }
+        public decimal QuantityRequired { get; set; }
     
         public virtual BeverageTypes BeverageTypes { get; set; }
         public virtual RawMaterials RawMaterials { get; set; }

@@ -18,7 +18,6 @@ namespace Registration.Model
         public Users()
         {
             this.Orders = new HashSet<Orders>();
-            this.ProductionTasks = new HashSet<ProductionTasks>();
             this.Shipments = new HashSet<Shipments>();
             this.TaxReports = new HashSet<TaxReports>();
         }
@@ -30,11 +29,14 @@ namespace Registration.Model
         public string Otchestvo { get; set; }
         public int RoleID { get; set; }
         public string PasswordHash { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Status { get; set; }
+        public string Position { get; set; }
+        public string PhotoPath { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Orders> Orders { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ProductionTasks> ProductionTasks { get; set; }
         public virtual Roles Roles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Shipments> Shipments { get; set; }

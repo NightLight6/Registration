@@ -22,9 +22,8 @@ namespace Registration.Model
     
         public int BatchID { get; set; }
         public int TaskID { get; set; }
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
         public System.DateTime ProductionDate { get; set; }
-        public string WarehouseLocation { get; set; }
     
         public virtual ProductionTasks ProductionTasks { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

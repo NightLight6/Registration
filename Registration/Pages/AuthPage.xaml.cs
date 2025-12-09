@@ -49,7 +49,7 @@ namespace Registration.Pages
 
             string passwordHash = PasswordHasher.ComputeSha256Hash(password);
 
-            using (var context = new BeermagEntities2())
+            using (var context = new BeermageEntities1())
             {
                 var user = context.Users.FirstOrDefault(u => u.Login == login && u.PasswordHash == passwordHash);
 
@@ -68,25 +68,21 @@ namespace Registration.Pages
 
                     switch (roleName)
                     {
-                        case "Manager":
-                            nextPage = new ManagerPage(user, roleName);
+                        case "Администратор":
+                        case "Менеджер":
+                        case "Сотрудник":
+                            nextPage = new UserListPage();
                             break;
-                        case "Production":
-                            nextPage = new ProductionPage(user, roleName);
+                        case "Продавец":
+                            nextPage = new ProductListPage();
                             break;
-                        case "Warehouse":
-                            nextPage = new WarehousePage(user, roleName);
-                            break;
-                        case "Accountant":
-                            nextPage = new AccountantPage(user, roleName);
-                            break;
-                        case "Admin":
-                            nextPage = new ManagerPage(user, roleName);
+                        case "Клиент":
+                            nextPage = new ClientPage(user, roleName);
                             break;
                         default:
                             nextPage = new ClientPage(user, roleName);
                             break;
-                    }
+                    };
 
                     NavigationService?.Navigate(nextPage);
                 }
@@ -127,6 +123,7 @@ namespace Registration.Pages
             tbCaptcha.IsEnabled = false;
             btnEnter.IsEnabled = false;
             btnEnterGuest.IsEnabled = false;
+            btnGoToRegister.IsEnabled = false;
 
             int secondsLeft = 10;
             tbBlockTimer.Text = $"Заблокировано на {secondsLeft} секунд...";
@@ -157,6 +154,7 @@ namespace Registration.Pages
             tbCaptcha.IsEnabled = true;
             btnEnter.IsEnabled = true;
             btnEnterGuest.IsEnabled = true;
+            btnGoToRegister.IsEnabled = true;
 
             _failedAttempts = 0;
             HideCaptcha();

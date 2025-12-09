@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Хранилище BeermagModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="Хранилище BeermageModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="BeverageMaterialRequirements">
           <Key>
             <PropertyRef Name="BeverageTypeID" />
@@ -12,7 +12,7 @@
           </Key>
           <Property Name="BeverageTypeID" Type="int" Nullable="false" />
           <Property Name="MaterialID" Type="int" Nullable="false" />
-          <Property Name="QuantityPerUnit" Type="decimal" Precision="10" Scale="3" Nullable="false" />
+          <Property Name="QuantityRequired" Type="decimal" Precision="10" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="BeverageTypes">
           <Key>
@@ -27,22 +27,28 @@
           </Key>
           <Property Name="BatchID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TaskID" Type="int" Nullable="false" />
-          <Property Name="Quantity" Type="decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="ProductionDate" Type="date" Nullable="false" />
-          <Property Name="WarehouseLocation" Type="nvarchar" MaxLength="100" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="ProductionDate" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <EntityType Name="Orders">
           <Key>
             <PropertyRef Name="OrderID" />
           </Key>
           <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ClientName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ClientName" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="OrderDate" Type="date" Nullable="false" />
-          <Property Name="DeliveryDate" Type="date" Nullable="false" />
+          <Property Name="DeliveryDate" Type="date" />
           <Property Name="BeverageTypeID" Type="int" Nullable="false" />
-          <Property Name="Quantity" Type="decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="Status" Type="nvarchar" MaxLength="30" Nullable="false" />
-          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="PreparedByUserID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductCategories">
+          <Key>
+            <PropertyRef Name="CategoryID" />
+          </Key>
+          <Property Name="CategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CategoryName" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="ProductionTaskMaterials">
           <Key>
@@ -51,7 +57,7 @@
           <Property Name="TaskMaterialID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TaskID" Type="int" Nullable="false" />
           <Property Name="MaterialID" Type="int" Nullable="false" />
-          <Property Name="Quantity" Type="decimal" Precision="10" Scale="3" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="10" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="ProductionTasks">
           <Key>
@@ -59,25 +65,38 @@
           </Key>
           <Property Name="TaskID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="OrderID" Type="int" Nullable="false" />
-          <Property Name="StartDate" Type="date" Nullable="false" />
-          <Property Name="PlannedEndDate" Type="date" Nullable="false" />
-          <Property Name="ActualEndDate" Type="date" />
-          <Property Name="Status" Type="nvarchar" MaxLength="30" Nullable="false" />
-          <Property Name="AssignedToUserID" Type="int" Nullable="false" />
+          <Property Name="StartDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="PlannedEndDate" Type="datetime2" Precision="7" />
+          <Property Name="ActualEndDate" Type="datetime2" Precision="7" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Products">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Price" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="CostPrice" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="IsAvailable" Type="bit" Nullable="false" />
+          <Property Name="BeverageTypeID" Type="int" Nullable="false" />
+          <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="PhotoPath" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="RawMaterials">
           <Key>
             <PropertyRef Name="MaterialID" />
           </Key>
           <Property Name="MaterialID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
         </EntityType>
         <EntityType Name="Roles">
           <Key>
             <PropertyRef Name="RoleID" />
           </Key>
           <Property Name="RoleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RoleName" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Shipments">
           <Key>
@@ -87,7 +106,7 @@
           <Property Name="OrderID" Type="int" Nullable="false" />
           <Property Name="BatchID" Type="int" Nullable="false" />
           <Property Name="ShipmentDate" Type="date" Nullable="false" />
-          <Property Name="DocumentNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DocumentNumber" Type="nvarchar" MaxLength="50" />
           <Property Name="ShippedByUserID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="sysdiagrams">
@@ -106,28 +125,30 @@
           </Key>
           <Property Name="ReportID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ReportMonth" Type="date" Nullable="false" />
-          <Property Name="TotalRevenue" Type="decimal" Precision="15" Scale="2" Nullable="false" />
-          <Property Name="TotalCost" Type="decimal" Precision="15" Scale="2" Nullable="false" />
-          <Property Name="VAT" Type="decimal" Precision="15" Scale="2" Nullable="false" />
+          <Property Name="TotalRevenue" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TotalCost" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="VAT" Type="decimal" Precision="18" Scale="2" />
           <Property Name="PreparedByUserID" Type="int" Nullable="false" />
-          <Property Name="SubmittedAt" Type="datetime" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="UserID" />
           </Key>
           <Property Name="UserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Login" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Surname" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Otchestvo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Login" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Surname" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Otchestvo" Type="nvarchar" MaxLength="100" />
           <Property Name="RoleID" Type="int" Nullable="false" />
-          <Property Name="PasswordHash" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="255" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="20" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Position" Type="nvarchar" MaxLength="100" />
+          <Property Name="PhotoPath" Type="nvarchar(max)" />
         </EntityType>
         <Association Name="FK_BMR_BeverageTypes">
-          <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1" />
           <End Role="BeverageMaterialRequirements" Type="Self.BeverageMaterialRequirements" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BeverageTypes">
@@ -151,9 +172,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_FinishedBatches_ProductionTasks">
-          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1" />
           <End Role="FinishedBatches" Type="Self.FinishedBatches" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ProductionTasks">
@@ -184,14 +203,12 @@
               <PropertyRef Name="UserID" />
             </Principal>
             <Dependent Role="Orders">
-              <PropertyRef Name="UserID" />
+              <PropertyRef Name="PreparedByUserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ProductionTasks_Orders">
-          <End Role="Orders" Type="Self.Orders" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
           <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Orders">
@@ -202,22 +219,32 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ProductionTasks_Users">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="*" />
+        <Association Name="FK_Products_BeverageTypes">
+          <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="UserID" />
+            <Principal Role="BeverageTypes">
+              <PropertyRef Name="BeverageTypeID" />
             </Principal>
-            <Dependent Role="ProductionTasks">
-              <PropertyRef Name="AssignedToUserID" />
+            <Dependent Role="Products">
+              <PropertyRef Name="BeverageTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Products_ProductCategories">
+          <End Role="ProductCategories" Type="Self.ProductCategories" Multiplicity="1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductCategories">
+              <PropertyRef Name="CategoryID" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="CategoryID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PTM_ProductionTasks">
-          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1" />
           <End Role="ProductionTaskMaterials" Type="Self.ProductionTaskMaterials" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ProductionTasks">
@@ -331,13 +358,15 @@
           <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <EntityContainer Name="Хранилище BeermagModelContainer">
+        <EntityContainer Name="Хранилище BeermageModelContainer">
           <EntitySet Name="BeverageMaterialRequirements" EntityType="Self.BeverageMaterialRequirements" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BeverageTypes" EntityType="Self.BeverageTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinishedBatches" EntityType="Self.FinishedBatches" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductCategories" EntityType="Self.ProductCategories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProductionTaskMaterials" EntityType="Self.ProductionTaskMaterials" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProductionTasks" EntityType="Self.ProductionTasks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RawMaterials" EntityType="Self.RawMaterials" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Shipments" EntityType="Self.Shipments" Schema="dbo" store:Type="Tables" />
@@ -368,9 +397,13 @@
             <End Role="Orders" EntitySet="Orders" />
             <End Role="ProductionTasks" EntitySet="ProductionTasks" />
           </AssociationSet>
-          <AssociationSet Name="FK_ProductionTasks_Users" Association="Self.FK_ProductionTasks_Users">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="ProductionTasks" EntitySet="ProductionTasks" />
+          <AssociationSet Name="FK_Products_BeverageTypes" Association="Self.FK_Products_BeverageTypes">
+            <End Role="BeverageTypes" EntitySet="BeverageTypes" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_ProductCategories" Association="Self.FK_Products_ProductCategories">
+            <End Role="ProductCategories" EntitySet="ProductCategories" />
+            <End Role="Products" EntitySet="Products" />
           </AssociationSet>
           <AssociationSet Name="FK_PTM_ProductionTasks" Association="Self.FK_PTM_ProductionTasks">
             <End Role="ProductionTasks" EntitySet="ProductionTasks" />
@@ -401,10 +434,11 @@
             <End Role="Users" EntitySet="Users" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="BeermagModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="BeermageModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="BeverageMaterialRequirements">
           <Key>
             <PropertyRef Name="BeverageTypeID" />
@@ -412,7 +446,7 @@
           </Key>
           <Property Name="BeverageTypeID" Type="Int32" Nullable="false" />
           <Property Name="MaterialID" Type="Int32" Nullable="false" />
-          <Property Name="QuantityPerUnit" Type="Decimal" Precision="10" Scale="3" Nullable="false" />
+          <Property Name="QuantityRequired" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
           <NavigationProperty Name="BeverageTypes" Relationship="Self.FK_BMR_BeverageTypes" FromRole="BeverageMaterialRequirements" ToRole="BeverageTypes" />
           <NavigationProperty Name="RawMaterials" Relationship="Self.FK_BMR_RawMaterials" FromRole="BeverageMaterialRequirements" ToRole="RawMaterials" />
         </EntityType>
@@ -424,6 +458,7 @@
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="BeverageMaterialRequirements" Relationship="Self.FK_BMR_BeverageTypes" FromRole="BeverageTypes" ToRole="BeverageMaterialRequirements" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_BeverageTypes" FromRole="BeverageTypes" ToRole="Orders" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Products_BeverageTypes" FromRole="BeverageTypes" ToRole="Products" />
         </EntityType>
         <EntityType Name="FinishedBatches">
           <Key>
@@ -431,9 +466,8 @@
           </Key>
           <Property Name="BatchID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TaskID" Type="Int32" Nullable="false" />
-          <Property Name="Quantity" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="ProductionDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="WarehouseLocation" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="ProductionDate" Type="DateTime" Nullable="false" Precision="7" />
           <NavigationProperty Name="ProductionTasks" Relationship="Self.FK_FinishedBatches_ProductionTasks" FromRole="FinishedBatches" ToRole="ProductionTasks" />
           <NavigationProperty Name="Shipments" Relationship="Self.FK_Shipments_FinishedBatches" FromRole="FinishedBatches" ToRole="Shipments" />
         </EntityType>
@@ -442,17 +476,25 @@
             <PropertyRef Name="OrderID" />
           </Key>
           <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ClientName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ClientName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="DeliveryDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="DeliveryDate" Type="DateTime" Precision="0" />
           <Property Name="BeverageTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Quantity" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="Status" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PreparedByUserID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="BeverageTypes" Relationship="Self.FK_Orders_BeverageTypes" FromRole="Orders" ToRole="BeverageTypes" />
           <NavigationProperty Name="Users" Relationship="Self.FK_Orders_Users" FromRole="Orders" ToRole="Users" />
           <NavigationProperty Name="ProductionTasks" Relationship="Self.FK_ProductionTasks_Orders" FromRole="Orders" ToRole="ProductionTasks" />
           <NavigationProperty Name="Shipments" Relationship="Self.FK_Shipments_Orders" FromRole="Orders" ToRole="Shipments" />
+        </EntityType>
+        <EntityType Name="ProductCategories">
+          <Key>
+            <PropertyRef Name="CategoryID" />
+          </Key>
+          <Property Name="CategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CategoryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Products_ProductCategories" FromRole="ProductCategories" ToRole="Products" />
         </EntityType>
         <EntityType Name="ProductionTaskMaterials">
           <Key>
@@ -461,7 +503,7 @@
           <Property Name="TaskMaterialID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TaskID" Type="Int32" Nullable="false" />
           <Property Name="MaterialID" Type="Int32" Nullable="false" />
-          <Property Name="Quantity" Type="Decimal" Precision="10" Scale="3" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
           <NavigationProperty Name="ProductionTasks" Relationship="Self.FK_PTM_ProductionTasks" FromRole="ProductionTaskMaterials" ToRole="ProductionTasks" />
           <NavigationProperty Name="RawMaterials" Relationship="Self.FK_PTM_RawMaterials" FromRole="ProductionTaskMaterials" ToRole="RawMaterials" />
         </EntityType>
@@ -471,22 +513,36 @@
           </Key>
           <Property Name="TaskID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="OrderID" Type="Int32" Nullable="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="PlannedEndDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="ActualEndDate" Type="DateTime" Precision="0" />
-          <Property Name="Status" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="AssignedToUserID" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="PlannedEndDate" Type="DateTime" Precision="7" />
+          <Property Name="ActualEndDate" Type="DateTime" Precision="7" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="FinishedBatches" Relationship="Self.FK_FinishedBatches_ProductionTasks" FromRole="ProductionTasks" ToRole="FinishedBatches" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_ProductionTasks_Orders" FromRole="ProductionTasks" ToRole="Orders" />
           <NavigationProperty Name="ProductionTaskMaterials" Relationship="Self.FK_PTM_ProductionTasks" FromRole="ProductionTasks" ToRole="ProductionTaskMaterials" />
-          <NavigationProperty Name="Users" Relationship="Self.FK_ProductionTasks_Users" FromRole="ProductionTasks" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Products">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="CostPrice" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="IsAvailable" Type="Boolean" Nullable="false" />
+          <Property Name="BeverageTypeID" Type="Int32" Nullable="false" />
+          <Property Name="CategoryID" Type="Int32" Nullable="false" />
+          <Property Name="PhotoPath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="BeverageTypes" Relationship="Self.FK_Products_BeverageTypes" FromRole="Products" ToRole="BeverageTypes" />
+          <NavigationProperty Name="ProductCategories" Relationship="Self.FK_Products_ProductCategories" FromRole="Products" ToRole="ProductCategories" />
         </EntityType>
         <EntityType Name="RawMaterials">
           <Key>
             <PropertyRef Name="MaterialID" />
           </Key>
           <Property Name="MaterialID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="BeverageMaterialRequirements" Relationship="Self.FK_BMR_RawMaterials" FromRole="RawMaterials" ToRole="BeverageMaterialRequirements" />
           <NavigationProperty Name="ProductionTaskMaterials" Relationship="Self.FK_PTM_RawMaterials" FromRole="RawMaterials" ToRole="ProductionTaskMaterials" />
         </EntityType>
@@ -495,7 +551,7 @@
             <PropertyRef Name="RoleID" />
           </Key>
           <Property Name="RoleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RoleName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RoleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Users" Relationship="Self.FK_Users_Roles" FromRole="Roles" ToRole="Users" />
         </EntityType>
         <EntityType Name="Shipments">
@@ -506,7 +562,7 @@
           <Property Name="OrderID" Type="Int32" Nullable="false" />
           <Property Name="BatchID" Type="Int32" Nullable="false" />
           <Property Name="ShipmentDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="DocumentNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DocumentNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ShippedByUserID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="FinishedBatches" Relationship="Self.FK_Shipments_FinishedBatches" FromRole="Shipments" ToRole="FinishedBatches" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Shipments_Orders" FromRole="Shipments" ToRole="Orders" />
@@ -528,11 +584,10 @@
           </Key>
           <Property Name="ReportID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ReportMonth" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="TotalRevenue" Type="Decimal" Precision="15" Scale="2" Nullable="false" />
-          <Property Name="TotalCost" Type="Decimal" Precision="15" Scale="2" Nullable="false" />
-          <Property Name="VAT" Type="Decimal" Precision="15" Scale="2" Nullable="false" />
+          <Property Name="TotalRevenue" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TotalCost" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="VAT" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="PreparedByUserID" Type="Int32" Nullable="false" />
-          <Property Name="SubmittedAt" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Users" Relationship="Self.FK_TaxReports_Users" FromRole="TaxReports" ToRole="Users" />
         </EntityType>
         <EntityType Name="Users">
@@ -540,22 +595,24 @@
             <PropertyRef Name="UserID" />
           </Key>
           <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Login" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Surname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Otchestvo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Login" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Surname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Otchestvo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="RoleID" Type="Int32" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Position" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhotoPath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Users" FromRole="Users" ToRole="Orders" />
-          <NavigationProperty Name="ProductionTasks" Relationship="Self.FK_ProductionTasks_Users" FromRole="Users" ToRole="ProductionTasks" />
           <NavigationProperty Name="Roles" Relationship="Self.FK_Users_Roles" FromRole="Users" ToRole="Roles" />
           <NavigationProperty Name="Shipments" Relationship="Self.FK_Shipments_Users" FromRole="Users" ToRole="Shipments" />
           <NavigationProperty Name="TaxReports" Relationship="Self.FK_TaxReports_Users" FromRole="Users" ToRole="TaxReports" />
-          <Property Name="PasswordHash" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_BMR_BeverageTypes">
-          <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1" />
           <End Role="BeverageMaterialRequirements" Type="Self.BeverageMaterialRequirements" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BeverageTypes">
@@ -590,10 +647,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Products_BeverageTypes">
+          <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BeverageTypes">
+              <PropertyRef Name="BeverageTypeID" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="BeverageTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_FinishedBatches_ProductionTasks">
-          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1" />
           <End Role="FinishedBatches" Type="Self.FinishedBatches" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ProductionTasks">
@@ -624,14 +691,12 @@
               <PropertyRef Name="UserID" />
             </Principal>
             <Dependent Role="Orders">
-              <PropertyRef Name="UserID" />
+              <PropertyRef Name="PreparedByUserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ProductionTasks_Orders">
-          <End Role="Orders" Type="Self.Orders" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1" />
           <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Orders">
@@ -654,10 +719,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Products_ProductCategories">
+          <End Role="ProductCategories" Type="Self.ProductCategories" Multiplicity="1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductCategories">
+              <PropertyRef Name="CategoryID" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PTM_ProductionTasks">
-          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="1" />
           <End Role="ProductionTaskMaterials" Type="Self.ProductionTaskMaterials" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ProductionTasks">
@@ -677,18 +752,6 @@
             </Principal>
             <Dependent Role="ProductionTaskMaterials">
               <PropertyRef Name="MaterialID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ProductionTasks_Users">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="ProductionTasks" Type="Self.ProductionTasks" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="UserID" />
-            </Principal>
-            <Dependent Role="ProductionTasks">
-              <PropertyRef Name="AssignedToUserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -728,13 +791,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="BeermagEntities2" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="BeermageEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="BeverageMaterialRequirements" EntityType="Self.BeverageMaterialRequirements" />
           <EntitySet Name="BeverageTypes" EntityType="Self.BeverageTypes" />
           <EntitySet Name="FinishedBatches" EntityType="Self.FinishedBatches" />
           <EntitySet Name="Orders" EntityType="Self.Orders" />
+          <EntitySet Name="ProductCategories" EntityType="Self.ProductCategories" />
           <EntitySet Name="ProductionTaskMaterials" EntityType="Self.ProductionTaskMaterials" />
           <EntitySet Name="ProductionTasks" EntityType="Self.ProductionTasks" />
+          <EntitySet Name="Products" EntityType="Self.Products" />
           <EntitySet Name="RawMaterials" EntityType="Self.RawMaterials" />
           <EntitySet Name="Roles" EntityType="Self.Roles" />
           <EntitySet Name="Shipments" EntityType="Self.Shipments" />
@@ -752,6 +817,10 @@
           <AssociationSet Name="FK_Orders_BeverageTypes" Association="Self.FK_Orders_BeverageTypes">
             <End Role="BeverageTypes" EntitySet="BeverageTypes" />
             <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_BeverageTypes" Association="Self.FK_Products_BeverageTypes">
+            <End Role="BeverageTypes" EntitySet="BeverageTypes" />
+            <End Role="Products" EntitySet="Products" />
           </AssociationSet>
           <AssociationSet Name="FK_FinishedBatches_ProductionTasks" Association="Self.FK_FinishedBatches_ProductionTasks">
             <End Role="ProductionTasks" EntitySet="ProductionTasks" />
@@ -773,6 +842,10 @@
             <End Role="Orders" EntitySet="Orders" />
             <End Role="Shipments" EntitySet="Shipments" />
           </AssociationSet>
+          <AssociationSet Name="FK_Products_ProductCategories" Association="Self.FK_Products_ProductCategories">
+            <End Role="ProductCategories" EntitySet="ProductCategories" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
           <AssociationSet Name="FK_PTM_ProductionTasks" Association="Self.FK_PTM_ProductionTasks">
             <End Role="ProductionTasks" EntitySet="ProductionTasks" />
             <End Role="ProductionTaskMaterials" EntitySet="ProductionTaskMaterials" />
@@ -780,10 +853,6 @@
           <AssociationSet Name="FK_PTM_RawMaterials" Association="Self.FK_PTM_RawMaterials">
             <End Role="RawMaterials" EntitySet="RawMaterials" />
             <End Role="ProductionTaskMaterials" EntitySet="ProductionTaskMaterials" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ProductionTasks_Users" Association="Self.FK_ProductionTasks_Users">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="ProductionTasks" EntitySet="ProductionTasks" />
           </AssociationSet>
           <AssociationSet Name="FK_Users_Roles" Association="Self.FK_Users_Roles">
             <End Role="Roles" EntitySet="Roles" />
@@ -813,11 +882,11 @@
             <Parameter Name="diagramname" Mode="In" Type="String" />
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(BeermagModel.sp_helpdiagramdefinition_Result)">
+          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(BeermageModel.sp_helpdiagramdefinition_Result)">
             <Parameter Name="diagramname" Mode="In" Type="String" />
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(BeermagModel.sp_helpdiagrams_Result)">
+          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(BeermageModel.sp_helpdiagrams_Result)">
             <Parameter Name="diagramname" Mode="In" Type="String" />
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -844,18 +913,18 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="Хранилище BeermagModelContainer" CdmEntityContainer="BeermagEntities2">
+        <EntityContainerMapping StorageEntityContainer="Хранилище BeermageModelContainer" CdmEntityContainer="BeermageEntities1">
           <EntitySetMapping Name="BeverageMaterialRequirements">
-            <EntityTypeMapping TypeName="BeermagModel.BeverageMaterialRequirements">
+            <EntityTypeMapping TypeName="BeermageModel.BeverageMaterialRequirements">
               <MappingFragment StoreEntitySet="BeverageMaterialRequirements">
                 <ScalarProperty Name="BeverageTypeID" ColumnName="BeverageTypeID" />
                 <ScalarProperty Name="MaterialID" ColumnName="MaterialID" />
-                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
+                <ScalarProperty Name="QuantityRequired" ColumnName="QuantityRequired" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BeverageTypes">
-            <EntityTypeMapping TypeName="BeermagModel.BeverageTypes">
+            <EntityTypeMapping TypeName="BeermageModel.BeverageTypes">
               <MappingFragment StoreEntitySet="BeverageTypes">
                 <ScalarProperty Name="BeverageTypeID" ColumnName="BeverageTypeID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -863,18 +932,17 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="FinishedBatches">
-            <EntityTypeMapping TypeName="BeermagModel.FinishedBatches">
+            <EntityTypeMapping TypeName="BeermageModel.FinishedBatches">
               <MappingFragment StoreEntitySet="FinishedBatches">
                 <ScalarProperty Name="BatchID" ColumnName="BatchID" />
                 <ScalarProperty Name="TaskID" ColumnName="TaskID" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="ProductionDate" ColumnName="ProductionDate" />
-                <ScalarProperty Name="WarehouseLocation" ColumnName="WarehouseLocation" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Orders">
-            <EntityTypeMapping TypeName="BeermagModel.Orders">
+            <EntityTypeMapping TypeName="BeermageModel.Orders">
               <MappingFragment StoreEntitySet="Orders">
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
                 <ScalarProperty Name="ClientName" ColumnName="ClientName" />
@@ -883,12 +951,20 @@
                 <ScalarProperty Name="BeverageTypeID" ColumnName="BeverageTypeID" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="PreparedByUserID" ColumnName="PreparedByUserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductCategories">
+            <EntityTypeMapping TypeName="BeermageModel.ProductCategories">
+              <MappingFragment StoreEntitySet="ProductCategories">
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ProductionTaskMaterials">
-            <EntityTypeMapping TypeName="BeermagModel.ProductionTaskMaterials">
+            <EntityTypeMapping TypeName="BeermageModel.ProductionTaskMaterials">
               <MappingFragment StoreEntitySet="ProductionTaskMaterials">
                 <ScalarProperty Name="TaskMaterialID" ColumnName="TaskMaterialID" />
                 <ScalarProperty Name="TaskID" ColumnName="TaskID" />
@@ -898,7 +974,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ProductionTasks">
-            <EntityTypeMapping TypeName="BeermagModel.ProductionTasks">
+            <EntityTypeMapping TypeName="BeermageModel.ProductionTasks">
               <MappingFragment StoreEntitySet="ProductionTasks">
                 <ScalarProperty Name="TaskID" ColumnName="TaskID" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
@@ -906,12 +982,26 @@
                 <ScalarProperty Name="PlannedEndDate" ColumnName="PlannedEndDate" />
                 <ScalarProperty Name="ActualEndDate" ColumnName="ActualEndDate" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="AssignedToUserID" ColumnName="AssignedToUserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Products">
+            <EntityTypeMapping TypeName="BeermageModel.Products">
+              <MappingFragment StoreEntitySet="Products">
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="CostPrice" ColumnName="CostPrice" />
+                <ScalarProperty Name="IsAvailable" ColumnName="IsAvailable" />
+                <ScalarProperty Name="BeverageTypeID" ColumnName="BeverageTypeID" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="PhotoPath" ColumnName="PhotoPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RawMaterials">
-            <EntityTypeMapping TypeName="BeermagModel.RawMaterials">
+            <EntityTypeMapping TypeName="BeermageModel.RawMaterials">
               <MappingFragment StoreEntitySet="RawMaterials">
                 <ScalarProperty Name="MaterialID" ColumnName="MaterialID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -919,7 +1009,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Roles">
-            <EntityTypeMapping TypeName="BeermagModel.Roles">
+            <EntityTypeMapping TypeName="BeermageModel.Roles">
               <MappingFragment StoreEntitySet="Roles">
                 <ScalarProperty Name="RoleID" ColumnName="RoleID" />
                 <ScalarProperty Name="RoleName" ColumnName="RoleName" />
@@ -927,7 +1017,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Shipments">
-            <EntityTypeMapping TypeName="BeermagModel.Shipments">
+            <EntityTypeMapping TypeName="BeermageModel.Shipments">
               <MappingFragment StoreEntitySet="Shipments">
                 <ScalarProperty Name="ShipmentID" ColumnName="ShipmentID" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
@@ -939,7 +1029,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="BeermagModel.sysdiagrams">
+            <EntityTypeMapping TypeName="BeermageModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="principal_id" ColumnName="principal_id" />
@@ -950,7 +1040,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="TaxReports">
-            <EntityTypeMapping TypeName="BeermagModel.TaxReports">
+            <EntityTypeMapping TypeName="BeermageModel.TaxReports">
               <MappingFragment StoreEntitySet="TaxReports">
                 <ScalarProperty Name="ReportID" ColumnName="ReportID" />
                 <ScalarProperty Name="ReportMonth" ColumnName="ReportMonth" />
@@ -958,37 +1048,41 @@
                 <ScalarProperty Name="TotalCost" ColumnName="TotalCost" />
                 <ScalarProperty Name="VAT" ColumnName="VAT" />
                 <ScalarProperty Name="PreparedByUserID" ColumnName="PreparedByUserID" />
-                <ScalarProperty Name="SubmittedAt" ColumnName="SubmittedAt" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="BeermagModel.Users">
+            <EntityTypeMapping TypeName="BeermageModel.Users">
               <MappingFragment StoreEntitySet="Users">
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="Login" ColumnName="Login" />
                 <ScalarProperty Name="Surname" ColumnName="Surname" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Otchestvo" ColumnName="Otchestvo" />
                 <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Position" ColumnName="Position" />
+                <ScalarProperty Name="PhotoPath" ColumnName="PhotoPath" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="Хранилище BeermagModel.sp_alterdiagram" />
-          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="Хранилище BeermagModel.sp_creatediagram" />
-          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="Хранилище BeermagModel.sp_dropdiagram" />
-          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="Хранилище BeermagModel.sp_helpdiagramdefinition">
+          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="Хранилище BeermageModel.sp_alterdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="Хранилище BeermageModel.sp_creatediagram" />
+          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="Хранилище BeermageModel.sp_dropdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="Хранилище BeermageModel.sp_helpdiagramdefinition">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="BeermagModel.sp_helpdiagramdefinition_Result">
+              <ComplexTypeMapping TypeName="BeermageModel.sp_helpdiagramdefinition_Result">
                 <ScalarProperty Name="version" ColumnName="version" />
                 <ScalarProperty Name="definition" ColumnName="definition" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="Хранилище BeermagModel.sp_helpdiagrams">
+          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="Хранилище BeermageModel.sp_helpdiagrams">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="BeermagModel.sp_helpdiagrams_Result">
+              <ComplexTypeMapping TypeName="BeermageModel.sp_helpdiagrams_Result">
                 <ScalarProperty Name="Database" ColumnName="Database" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
@@ -997,8 +1091,8 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="Хранилище BeermagModel.sp_renamediagram" />
-          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="Хранилище BeermagModel.sp_upgraddiagrams" />
+          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="Хранилище BeermageModel.sp_renamediagram" />
+          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="Хранилище BeermageModel.sp_upgraddiagrams" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

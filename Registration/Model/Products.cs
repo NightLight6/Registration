@@ -12,15 +12,19 @@ namespace Registration.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class TaxReports
+    public partial class Products
     {
-        public int ReportID { get; set; }
-        public System.DateTime ReportMonth { get; set; }
-        public decimal TotalRevenue { get; set; }
-        public decimal TotalCost { get; set; }
-        public Nullable<decimal> VAT { get; set; }
-        public int PreparedByUserID { get; set; }
+        public int ProductID { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public Nullable<decimal> CostPrice { get; set; }
+        public bool IsAvailable { get; set; }
+        public int BeverageTypeID { get; set; }
+        public int CategoryID { get; set; }
+        public string PhotoPath { get; set; }
     
-        public virtual Users Users { get; set; }
+        public virtual BeverageTypes BeverageTypes { get; set; }
+        public virtual ProductCategories ProductCategories { get; set; }
     }
 }

@@ -12,15 +12,18 @@ namespace Registration.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class TaxReports
+    public partial class ProductCategories
     {
-        public int ReportID { get; set; }
-        public System.DateTime ReportMonth { get; set; }
-        public decimal TotalRevenue { get; set; }
-        public decimal TotalCost { get; set; }
-        public Nullable<decimal> VAT { get; set; }
-        public int PreparedByUserID { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ProductCategories()
+        {
+            this.Products = new HashSet<Products>();
+        }
     
-        public virtual Users Users { get; set; }
+        public int CategoryID { get; set; }
+        public string CategoryName { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Products> Products { get; set; }
     }
 }

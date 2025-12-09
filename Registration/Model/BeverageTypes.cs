@@ -19,6 +19,7 @@ namespace Registration.Model
         {
             this.BeverageMaterialRequirements = new HashSet<BeverageMaterialRequirements>();
             this.Orders = new HashSet<Orders>();
+            this.Products = new HashSet<Products>();
         }
     
         public int BeverageTypeID { get; set; }
@@ -28,5 +29,7 @@ namespace Registration.Model
         public virtual ICollection<BeverageMaterialRequirements> BeverageMaterialRequirements { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Orders> Orders { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Products> Products { get; set; }
     }
 }

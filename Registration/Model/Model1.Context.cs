@@ -15,10 +15,10 @@ namespace Registration.Model
     using System.Data.Entity.Core.Objects;
     using System.Linq;
     
-    public partial class BeermagEntities2 : DbContext
+    public partial class BeermageEntities1 : DbContext
     {
-        public BeermagEntities2()
-            : base("name=BeermagEntities2")
+        public BeermageEntities1()
+            : base("name=BeermageEntities1")
         {
         }
     
@@ -31,8 +31,10 @@ namespace Registration.Model
         public virtual DbSet<BeverageTypes> BeverageTypes { get; set; }
         public virtual DbSet<FinishedBatches> FinishedBatches { get; set; }
         public virtual DbSet<Orders> Orders { get; set; }
+        public virtual DbSet<ProductCategories> ProductCategories { get; set; }
         public virtual DbSet<ProductionTaskMaterials> ProductionTaskMaterials { get; set; }
         public virtual DbSet<ProductionTasks> ProductionTasks { get; set; }
+        public virtual DbSet<Products> Products { get; set; }
         public virtual DbSet<RawMaterials> RawMaterials { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<Shipments> Shipments { get; set; }

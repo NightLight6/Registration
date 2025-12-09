@@ -1,42 +1,37 @@
 ﻿using Registration.Model;
 using System.Windows;
-using System;
+using System.Linq;
 using System.Windows.Controls;
+using System.Data.Entity;
 using Registration.Services;
+using System.Windows.Navigation;
 
 namespace Registration.Pages
 {
     public partial class ClientPage : Page
     {
-        public ClientPage(Users user, string rolename)
+        public ClientPage(Users user, string roleName)
         {
             InitializeComponent();
-            LoadGreeting();
-        }
-
-        private void LoadGreeting()
-        {
-            if (AuthPage.CurrentUser != null)
+            if (roleName == "Менеджер" || roleName == "Администратор" || roleName == "Продавец")
             {
-                var user = AuthPage.CurrentUser;
-                string fullName = $"{user.Name} {user.Surname} {user.Otchestvo}".Trim();
-
-                if (string.IsNullOrEmpty(fullName))
-                    fullName = $"{user.Name}";
-
-                string greeting = TimeHelper.GetGreeting();
-                tbGreeting.Text = $"{greeting}, {fullName}!";
+                NavigationService.Navigate(new ProductListPage());
             }
             else
             {
-                tbGreeting.Text = "Здравствуйте!";
+                LoadProducts();
             }
         }
 
-        private void LogoutButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void LoadProducts()
         {
-            AuthPage.CurrentUser = null;
-            NavigationService?.Navigate(new AuthPage());
+            using (var db = new BeermageEntities1())
+            {
+                var products = db.Products
+                    .Include("ProductCategories")
+                    .ToList();
+                LvProducts.ItemsSource = products;
+            }
         }
     }
 }

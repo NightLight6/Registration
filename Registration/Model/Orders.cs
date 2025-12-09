@@ -24,11 +24,11 @@ namespace Registration.Model
         public int OrderID { get; set; }
         public string ClientName { get; set; }
         public System.DateTime OrderDate { get; set; }
-        public System.DateTime DeliveryDate { get; set; }
+        public Nullable<System.DateTime> DeliveryDate { get; set; }
         public int BeverageTypeID { get; set; }
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
         public string Status { get; set; }
-        public int UserID { get; set; }
+        public int PreparedByUserID { get; set; }
     
         public virtual BeverageTypes BeverageTypes { get; set; }
         public virtual Users Users { get; set; }

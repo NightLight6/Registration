@@ -20,7 +20,7 @@
             <TextBlock Text="Пароль:" />
             <PasswordBox x:Name="tbPassword" />
 
-            <TextBlock x:Name="tblCaptcha" Text="Капча" Visibility="Collapsed" />
+            <TextBlock x:Name="tblCaptcha" Text="Капча" Visibility="Collapsed" TextDecorations="Strikethrough" />
             <TextBox x:Name="tbCaptcha" Visibility="Collapsed" />
 
             <StackPanel x:Name="spBlockTimerContainer" Orientation="Vertical" Height="30" VerticalAlignment="Top">
@@ -31,9 +31,7 @@
                 <Button x:Name="btnEnter" Content="Войти" Click="btnEnter_Click" />
             </StackPanel>
 
-            <Button Content="Нет аккаунта?" 
-                    Click="BtnGoToRegister_Click"
-                    Margin="0,10,0,0" Width="161"/>
+            <Button x:Name="btnGoToRegister" Content="Нет аккаунта?"  Click="BtnGoToRegister_Click" Margin="0,10,0,0" Width="161"/>
         </StackPanel>
     </Grid>
 </Page>

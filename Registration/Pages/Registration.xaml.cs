@@ -17,10 +17,21 @@ namespace Registration.Pages
 
         private void LoadRoles()
         {
-            using (var context = new BeermagEntities2())
+            try
             {
-                cmbRole.ItemsSource = context.Roles.ToList();
-                cmbRole.SelectedIndex = 0;
+                using (var context = new BeermageEntities1())
+                {
+                    cmbRole.ItemsSource = context.Roles.ToList();
+                    if (cmbRole.Items.Count > 0)
+                    {
+                        cmbRole.SelectedIndex = 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text = $"Ошибка загрузки ролей: {ex.Message}";
+                lblMessage.Foreground = System.Windows.Media.Brushes.Red;
             }
         }
 
@@ -38,24 +49,28 @@ namespace Registration.Pages
         {
             string surname = txtSurname.Text.Trim();
             string name = txtName.Text.Trim();
-            string otchestvo = txtOtchestvo.Text.Trim();
             string login = txtLogin.Text.Trim();
             string password = txtPassword.Password.Trim();
 
-            var selectedRole = cmbRole.SelectedItem as Roles;
-
             if (string.IsNullOrEmpty(surname) || string.IsNullOrEmpty(name) ||
-                string.IsNullOrEmpty(otchestvo) || string.IsNullOrEmpty(login) ||
-                string.IsNullOrEmpty(password) || selectedRole == null)
+                string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
             {
-                lblMessage.Text = "Все поля обязательны для заполнения.";
+                lblMessage.Text = "Обязательные поля: Фамилия, Имя, Логин, Пароль.";
+                lblMessage.Foreground = System.Windows.Media.Brushes.Red;
+                return;
+            }
+
+            var selectedRole = cmbRole.SelectedItem as Roles;
+            if (selectedRole == null)
+            {
+                lblMessage.Text = "Выберите роль.";
                 lblMessage.Foreground = System.Windows.Media.Brushes.Red;
                 return;
             }
 
             try
             {
-                using (var context = new BeermagEntities2())
+                using (var context = new BeermageEntities1())
                 {
                     if (context.Users.Any(u => u.Login == login))
                     {
@@ -65,15 +80,21 @@ namespace Registration.Pages
                     }
 
                     string passwordHash = PasswordHasher.ComputeSha256Hash(password);
+                    var selectedItem = cmbStatus.SelectedItem as ComboBoxItem;
+                    string status = selectedItem?.Content?.ToString() ?? "Активен";
 
                     var newUser = new Users
                     {
                         Login = login,
                         Surname = surname,
                         Name = name,
-                        Otchestvo = otchestvo,
+                        Otchestvo = string.IsNullOrWhiteSpace(txtOtchestvo.Text) ? null : txtOtchestvo.Text.Trim(),
+                        Email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim(),
+                        Phone = string.IsNullOrWhiteSpace(txtPhone.Text) ? null : txtPhone.Text.Trim(),
+                        Position = string.IsNullOrWhiteSpace(txtPosition.Text) ? null : txtPosition.Text.Trim(),
                         RoleID = selectedRole.RoleID,
-                        PasswordHash = passwordHash
+                        PasswordHash = passwordHash,
+                        Status = status
                     };
 
                     context.Users.Add(newUser);
@@ -82,13 +103,13 @@ namespace Registration.Pages
                     lblMessage.Text = "Пользователь успешно зарегистрирован!";
                     lblMessage.Foreground = System.Windows.Media.Brushes.Green;
 
-                    // Очистка полей
-                    txtSurname.Clear();
-                    txtName.Clear();
-                    txtOtchestvo.Clear();
-                    txtLogin.Clear();
-                    txtPassword.Clear();
+                    txtSurname.Clear(); txtName.Clear(); txtOtchestvo.Clear();
+                    txtLogin.Clear(); txtPassword.Clear(); txtEmail.Clear();
+                    txtPhone.Clear(); txtPosition.Clear();
                     cmbRole.SelectedIndex = 0;
+                    cmbStatus.SelectedIndex = 0;
+
+                    NavigationService?.Navigate(new AuthPage());
                 }
             }
             catch (Exception ex)
@@ -96,8 +117,8 @@ namespace Registration.Pages
                 lblMessage.Text = $"Ошибка: {ex.Message}";
                 lblMessage.Foreground = System.Windows.Media.Brushes.Red;
             }
-            NavigationService?.Navigate(new AuthPage());
         }
+
         private void BtnGoToLogin_Click(object sender, RoutedEventArgs e)
         {
             NavigationService?.Navigate(new AuthPage());

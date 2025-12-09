@@ -32,7 +32,7 @@ namespace Registration.Services
         {
             var now = DateTime.Now;
             var start = new TimeSpan(10, 0, 0); // 10:00
-            var end = new TimeSpan(13, 0, 0);   // 19:00
+            var end = new TimeSpan(24, 0, 0);   // 19:00
 
             var currentTime = now.TimeOfDay;
 

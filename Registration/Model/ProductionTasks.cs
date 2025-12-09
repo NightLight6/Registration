@@ -24,16 +24,14 @@ namespace Registration.Model
         public int TaskID { get; set; }
         public int OrderID { get; set; }
         public System.DateTime StartDate { get; set; }
-        public System.DateTime PlannedEndDate { get; set; }
+        public Nullable<System.DateTime> PlannedEndDate { get; set; }
         public Nullable<System.DateTime> ActualEndDate { get; set; }
         public string Status { get; set; }
-        public int AssignedToUserID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FinishedBatches> FinishedBatches { get; set; }
         public virtual Orders Orders { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProductionTaskMaterials> ProductionTaskMaterials { get; set; }
-        public virtual Users Users { get; set; }
     }
 }
