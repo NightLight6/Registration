@@ -12,6 +12,6 @@ namespace Registration.Model
         public int UserID { get; set; }
         public string PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public virtual User User { get; set; }
+        public virtual Users User { get; set; }
     }
 }

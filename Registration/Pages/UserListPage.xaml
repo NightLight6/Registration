@@ -9,19 +9,15 @@
       Title="Список сотрудников">
 
     <Page.Resources>
-        <local:PhotoPathToImageSourceConverter x:Key="PhotoConverter"/>
+        <local:ImagePathToImageSourceConverter x:Key="PhotoConverter"/>
     </Page.Resources>
 
-    <!-- Основной контейнер -->
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Панель поиска и фильтрации -->
             <RowDefinition Height="*"/>
-            <!-- Список сотрудников -->
         </Grid.RowDefinitions>
 
-        <!-- Панель поиска и фильтрации -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
             <TextBlock Text="Поиск:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox Name="txtSearch" Width="200" Margin="0,0,10,0" KeyUp="txtSearch_KeyUp"/>
@@ -34,7 +30,6 @@
             <Button Content="Добавить" Click="btnAdd_Click" Margin="10,0" Background="#9400D3" Foreground="White" Padding="10,5"/>
         </StackPanel>
 
-        <!-- Список сотрудников -->
         <ListView Name="lvUsers" Grid.Row="1" Margin="0">
             <ListView.View>
                 <GridView>

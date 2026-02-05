@@ -54,6 +54,11 @@ namespace Registration.Pages
             string searchText = txtSearch.Text?.ToLower() ?? "";
             string selectedTag = (cmbRolesFilter.SelectedItem as ComboBoxItem)?.Tag?.ToString();
 
+            if (string.IsNullOrEmpty(selectedTag))
+            {
+                selectedTag = "-1";
+            }
+
             var filtered = _allUsers.Where(u =>
                 (string.IsNullOrEmpty(searchText) ||
                  u.Login.ToLower().Contains(searchText) ||
@@ -69,12 +74,8 @@ namespace Registration.Pages
             }
         }
 
-        private void txtSearch_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            FilterUsers();
-        }
 
-        private void cmbRoleFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void txtSearch_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             FilterUsers();
         }
@@ -147,7 +148,7 @@ namespace Registration.Pages
 
         private void cmbRolesFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            FilterUsers();
         }
     }
 }

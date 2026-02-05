@@ -160,6 +160,8 @@
     <Compile Include="Services\CaptchaGenerator.cs" />
     <Compile Include="Services\ImagePathToImageSourceConverter.cs" />
     <Compile Include="Services\PasswordHasher.cs" />
+    <Compile Include="Validators\UserViewModel.cs" />
+    <Compile Include="Validators\UserViewModelValidators.cs" />
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -200,7 +202,6 @@
   <ItemGroup>
     <Compile Include="Services\PhotoPathToImageSourceConverter.cs" />
     <Compile Include="Services\TimeHelper.cs" />
-    <Compile Include="Services\User.cs" />
     <Compile Include="Services\UserPassword.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

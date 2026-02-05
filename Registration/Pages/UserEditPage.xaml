@@ -11,19 +11,15 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Блок с фото -->
             <RowDefinition Height="*"/>
-            <!-- Основная форма -->
         </Grid.RowDefinitions>
 
-        <!-- Блок с выбором фото -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
             <Button Content="Выбрать фото" Click="btnSelectPhoto_Click" Margin="0,0,10,0" Background="#9400D3" Foreground="White" Padding="10,5" Width="152"/>
             <Image x:Name="imgPhoto" Width="100" Height="100" Stretch="UniformToFill" Margin="0,0,10,0"/>
             <TextBlock x:Name="lblPlaceholder" Text="Нет фото" VerticalAlignment="Center" Foreground="Gray" FontSize="14"/>
         </StackPanel>
 
-        <!-- Основная форма -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Grid.RowDefinitions>

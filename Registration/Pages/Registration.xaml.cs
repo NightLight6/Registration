@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Registration.Helpers;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.ComponentModel.DataAnnotations;
 using Registration.Model;
+using Registration.Services;
+using Registration.Helpers;
+using Registration.UserViewModelValidators;
 
 namespace Registration.Pages
 {
@@ -47,24 +53,50 @@ namespace Registration.Pages
 
         private void BtnRegister_Click(object sender, RoutedEventArgs e)
         {
-            string surname = txtSurname.Text.Trim();
-            string name = txtName.Text.Trim();
-            string login = txtLogin.Text.Trim();
-            string password = txtPassword.Password.Trim();
-
-            if (string.IsNullOrEmpty(surname) || string.IsNullOrEmpty(name) ||
-                string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
-            {
-                lblMessage.Text = "Обязательные поля: Фамилия, Имя, Логин, Пароль.";
-                lblMessage.Foreground = System.Windows.Media.Brushes.Red;
-                return;
-            }
-
             var selectedRole = cmbRole.SelectedItem as Roles;
             if (selectedRole == null)
             {
-                lblMessage.Text = "Выберите роль.";
-                lblMessage.Foreground = System.Windows.Media.Brushes.Red;
+                MessageBox.Show("Выберите роль.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string password = txtPassword.Password.Trim();
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Пароль обязателен.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var viewModel = new UserViewModel
+            {
+                Login = txtLogin.Text.Trim(),
+                Surname = txtSurname.Text.Trim(),
+                Name = txtName.Text.Trim(),
+                Otchestvo = string.IsNullOrWhiteSpace(txtOtchestvo.Text) ? null : txtOtchestvo.Text.Trim(),
+                Email = txtEmail.Text.Trim(),
+                Phone = string.IsNullOrWhiteSpace(txtPhone.Text) ? null : txtPhone.Text.Trim(),
+                Position = string.IsNullOrWhiteSpace(txtPosition.Text) ? null : txtPosition.Text.Trim(),
+                RoleID = selectedRole.RoleID,
+                Status = (cmbStatus.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Активен"
+            };
+
+            try
+            {
+                var validator = new UserViewModelValidator(); // ← убедитесь, что имя класса и using правильные
+                var errors = validator.Validate(viewModel);
+
+                if (errors.Count > 0)
+                {
+                    string errorMessage = string.Join("\n", errors.Select(er =>
+                        $"{(er.MemberNames.Any() ? $"{string.Join(", ", er.MemberNames)}: " : "")}{er.ErrorMessage}"));
+
+                    MessageBox.Show(errorMessage, "Ошибки валидации", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка валидации: {ex.Message}", "Критическая ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -72,50 +104,36 @@ namespace Registration.Pages
             {
                 using (var context = new BeermageEntities1())
                 {
-                    if (context.Users.Any(u => u.Login == login))
+                    if (context.Users.Any(u => u.Login == viewModel.Login))
                     {
-                        lblMessage.Text = "Пользователь с таким логином уже существует.";
-                        lblMessage.Foreground = System.Windows.Media.Brushes.Orange;
+                        MessageBox.Show("Пользователь с таким логином уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
-                    string passwordHash = PasswordHasher.ComputeSha256Hash(password);
-                    var selectedItem = cmbStatus.SelectedItem as ComboBoxItem;
-                    string status = selectedItem?.Content?.ToString() ?? "Активен";
-
                     var newUser = new Users
                     {
-                        Login = login,
-                        Surname = surname,
-                        Name = name,
-                        Otchestvo = string.IsNullOrWhiteSpace(txtOtchestvo.Text) ? null : txtOtchestvo.Text.Trim(),
-                        Email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim(),
-                        Phone = string.IsNullOrWhiteSpace(txtPhone.Text) ? null : txtPhone.Text.Trim(),
-                        Position = string.IsNullOrWhiteSpace(txtPosition.Text) ? null : txtPosition.Text.Trim(),
-                        RoleID = selectedRole.RoleID,
-                        PasswordHash = passwordHash,
-                        Status = status
+                        Login = viewModel.Login,
+                        Surname = viewModel.Surname,
+                        Name = viewModel.Name,
+                        Otchestvo = viewModel.Otchestvo,
+                        Email = viewModel.Email,
+                        Phone = viewModel.Phone,
+                        Position = viewModel.Position,
+                        RoleID = viewModel.RoleID,
+                        Status = viewModel.Status,
+                        PasswordHash = PasswordHasher.ComputeSha256Hash(password)
                     };
 
                     context.Users.Add(newUser);
                     context.SaveChanges();
 
-                    lblMessage.Text = "Пользователь успешно зарегистрирован!";
-                    lblMessage.Foreground = System.Windows.Media.Brushes.Green;
-
-                    txtSurname.Clear(); txtName.Clear(); txtOtchestvo.Clear();
-                    txtLogin.Clear(); txtPassword.Clear(); txtEmail.Clear();
-                    txtPhone.Clear(); txtPosition.Clear();
-                    cmbRole.SelectedIndex = 0;
-                    cmbStatus.SelectedIndex = 0;
-
+                    MessageBox.Show("Пользователь успешно зарегистрирован!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     NavigationService?.Navigate(new AuthPage());
                 }
             }
             catch (Exception ex)
             {
-                lblMessage.Text = $"Ошибка: {ex.Message}";
-                lblMessage.Foreground = System.Windows.Media.Brushes.Red;
+                MessageBox.Show($"Ошибка при регистрации: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
