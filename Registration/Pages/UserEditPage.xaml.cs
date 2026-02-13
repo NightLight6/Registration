@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,10 +57,42 @@ namespace Registration.Pages
                     .FirstOrDefault(r => (int)r.Tag == _user.RoleID);
                 if (roleItem != null)
                     cmbRoles.SelectedItem = roleItem;
+
+                // Загрузка фото
+                if (!string.IsNullOrEmpty(_user.PhotoPath))
+                {
+                    try
+                    {
+                        string photoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _user.PhotoPath);
+                        if (File.Exists(photoPath))
+                        {
+                            imgPhoto.Source = new BitmapImage(new Uri(photoPath));
+                            imgPhoto.Visibility = Visibility.Visible;
+                            lblPlaceholder.Visibility = Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            imgPhoto.Visibility = Visibility.Collapsed;
+                            lblPlaceholder.Visibility = Visibility.Visible;
+                        }
+                    }
+                    catch
+                    {
+                        imgPhoto.Visibility = Visibility.Collapsed;
+                        lblPlaceholder.Visibility = Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    imgPhoto.Visibility = Visibility.Collapsed;
+                    lblPlaceholder.Visibility = Visibility.Visible;
+                }
             }
             else
             {
                 cmbStatus.SelectedIndex = 0;
+                imgPhoto.Visibility = Visibility.Collapsed;
+                lblPlaceholder.Visibility = Visibility.Visible;
             }
         }
 

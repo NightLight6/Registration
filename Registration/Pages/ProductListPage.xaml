@@ -1,73 +1,151 @@
-﻿<Page x:Class="Registration.Pages.ProductListPage"
+<Page x:Class="Registration.Pages.ProductListPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="clr-namespace:Registration.Services"
       Title="Управление товарами"
-      Background="White">
+      Background="{StaticResource DarkBackground}">
 
     <Page.Resources>
         <local:ImagePathToImageSourceConverter x:Key="ImagePathToImageSourceConverter" />
     </Page.Resources>
 
-    <Grid Margin="20">
+    <Grid Margin="25">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
-            <Button Content="Добавить товар" 
-                    Click="BtnAdd_Click" 
-                    Background="Purple" 
-                    Foreground="White"
-                    Padding="8,4" Width="160"/>
-        </StackPanel>
+        <!-- Панель управления -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource DarkSurface}" 
+                CornerRadius="12" 
+                Padding="20" 
+                Margin="0,0,0,20"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.2" Color="Black"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="+ Добавить товар" 
+                        Click="BtnAdd_Click" 
+                        Padding="20,12" 
+                        Width="200"
+                        Height="53"
+                        FontSize="15"
+                        FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
 
-        <ListView Name="LvProducts" Grid.Row="1">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderBrush="#ccc" BorderThickness="1" CornerRadius="5" Margin="5" Padding="10">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+        <!-- Список товаров -->
+        <Border Grid.Row="1" 
+                Background="{StaticResource DarkSurface}" 
+                CornerRadius="12" 
+                BorderBrush="{StaticResource BorderColor}" 
+                BorderThickness="1"
+                Padding="10">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.2" Color="Black"/>
+            </Border.Effect>
+            <ListView Name="LvProducts" Background="Transparent">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="{StaticResource BorderColor}" 
+                                BorderThickness="1" 
+                                CornerRadius="12" 
+                                Margin="8" 
+                                Padding="20" 
+                                Background="{StaticResource DarkCard}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.15" Color="Black"/>
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                            <Image Source="{Binding PhotoPath, Converter={StaticResource ImagePathToImageSourceConverter}}" 
-                                   Width="60" Height="60" 
-                                   Stretch="UniformToFill" 
-                                   Margin="0,0,10,0"/>
+                                <!-- Фото товара -->
+                                <Border Grid.Column="0" 
+                                        Width="100" 
+                                        Height="100" 
+                                        CornerRadius="10" 
+                                        Background="{StaticResource DarkSurface}"
+                                        BorderBrush="{StaticResource BorderColor}"
+                                        BorderThickness="1"
+                                        Margin="0,0,20,0">
+                                    <Image Source="{Binding PhotoPath, Converter={StaticResource ImagePathToImageSourceConverter}}" 
+                                           Width="98" 
+                                           Height="98" 
+                                           Stretch="UniformToFill"
+                                           ClipToBounds="True">
+                                        <Image.Clip>
+                                            <RectangleGeometry Rect="0,0,98,98" RadiusX="9" RadiusY="9"/>
+                                        </Image.Clip>
+                                    </Image>
+                                </Border>
 
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16"/>
-                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0,5,0,5"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Категория: " FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding ProductCategories.CategoryName}"/>
+                                <!-- Информация о товаре -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" 
+                                               FontWeight="Bold" 
+                                               FontSize="20" 
+                                               Foreground="{StaticResource TextPrimary}" 
+                                               Margin="0,0,0,10"/>
+                                    <TextBlock Text="{Binding Description}" 
+                                               TextWrapping="Wrap" 
+                                               Margin="0,0,0,12" 
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="14"
+                                               MaxHeight="60"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <TextBlock Text="Категория: " 
+                                                   FontWeight="SemiBold" 
+                                                   Foreground="{StaticResource TextSecondary}"
+                                                   FontSize="14"/>
+                                        <TextBlock Text="{Binding ProductCategories.CategoryName}" 
+                                                   Foreground="{StaticResource TextPrimary}"
+                                                   FontSize="14"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Price, StringFormat='Цена: {0:F2} руб.'}" 
+                                               FontSize="18" 
+                                               Foreground="{StaticResource SuccessColor}" 
+                                               FontWeight="Bold"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding Price, StringFormat='Цена: {0:F2} руб.'}" FontSize="14" Foreground="Green"/>
-                            </StackPanel>
 
-                            <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
-                                <Button Content="Редактировать" 
-                                        Tag="{Binding}" 
-                                        Click="BtnEdit_Click"
-                                        Background="Orange" 
-                                        Foreground="White"
-                                        Padding="5,2" 
-                                        Margin="0,0,0,2"/>
-                                <Button Content="Удалить" 
-                                        Tag="{Binding}" 
-                                        Click="BtnDelete_Click"
-                                        Background="Red" 
-                                        Foreground="White"
-                                        Padding="5,2"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                <!-- Кнопки действий -->
+                                <StackPanel Grid.Column="2" 
+                                            Orientation="Vertical" 
+                                            VerticalAlignment="Center"
+                                            Margin="20,0,0,0">
+                                    <Button Content="✏️ Редактировать" 
+                                            Tag="{Binding}" 
+                                            Click="BtnEdit_Click"
+                                            Background="{StaticResource WarningColor}" 
+                                            Foreground="White"
+                                            Padding="16,10" 
+                                            Margin="0,0,0,12"
+                                            Width="160"
+                                            Height="44"
+                                            FontSize="13"
+                                            FontWeight="SemiBold"/>
+                                    <Button Content="🗑️ Удалить" 
+                                            Tag="{Binding}" 
+                                            Click="BtnDelete_Click"
+                                            Background="{StaticResource ErrorColor}" 
+                                            Foreground="White"
+                                            Padding="16,10"
+                                            Width="160"
+                                            Height="44"
+                                            FontSize="13"
+                                            FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
     </Grid>
 </Page>

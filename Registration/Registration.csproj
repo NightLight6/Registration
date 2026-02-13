@@ -158,8 +158,11 @@
       <DependentUpon>UserListPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptchaGenerator.cs" />
+    <Compile Include="Services\CodeStorage.cs" />
+    <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\ImagePathToImageSourceConverter.cs" />
     <Compile Include="Services\PasswordHasher.cs" />
+    <Compile Include="Services\TwoFactorService.cs" />
     <Compile Include="Validators\UserViewModel.cs" />
     <Compile Include="Validators\UserViewModelValidators.cs" />
     <Page Include="MainWindow.xaml">

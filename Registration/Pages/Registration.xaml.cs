@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -37,7 +37,8 @@ namespace Registration.Pages
             catch (Exception ex)
             {
                 lblMessage.Text = $"Ошибка загрузки ролей: {ex.Message}";
-                lblMessage.Foreground = System.Windows.Media.Brushes.Red;
+                lblMessage.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
+                lblMessage.Visibility = Visibility.Visible;
             }
         }
 
@@ -47,7 +48,8 @@ namespace Registration.Pages
             if (selected != null)
             {
                 lblMessage.Text = $"Выбрана роль: {selected.RoleName}";
-                lblMessage.Foreground = System.Windows.Media.Brushes.Green;
+                lblMessage.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
+                lblMessage.Visibility = Visibility.Visible;
             }
         }
 

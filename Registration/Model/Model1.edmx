@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Хранилище BeermageModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Хранилище BeermageModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="BeverageMaterialRequirements">
           <Key>
             <PropertyRef Name="BeverageTypeID" />
@@ -146,6 +146,7 @@
           <Property Name="Status" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="Position" Type="nvarchar" MaxLength="100" />
           <Property Name="PhotoPath" Type="nvarchar(max)" />
+          <Property Name="IsTwoFactorEnabled" Type="bit" />
         </EntityType>
         <Association Name="FK_BMR_BeverageTypes">
           <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1" />
@@ -434,8 +435,7 @@
             <End Role="Users" EntitySet="Users" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="BeermageModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -610,6 +610,7 @@
           <NavigationProperty Name="Roles" Relationship="Self.FK_Users_Roles" FromRole="Users" ToRole="Roles" />
           <NavigationProperty Name="Shipments" Relationship="Self.FK_Shipments_Users" FromRole="Users" ToRole="Shipments" />
           <NavigationProperty Name="TaxReports" Relationship="Self.FK_TaxReports_Users" FromRole="Users" ToRole="TaxReports" />
+          <Property Name="IsTwoFactorEnabled" Type="Boolean" />
         </EntityType>
         <Association Name="FK_BMR_BeverageTypes">
           <End Role="BeverageTypes" Type="Self.BeverageTypes" Multiplicity="1" />
@@ -1054,6 +1055,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="BeermageModel.Users">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="IsTwoFactorEnabled" ColumnName="IsTwoFactorEnabled" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="Login" ColumnName="Login" />
                 <ScalarProperty Name="Surname" ColumnName="Surname" />
