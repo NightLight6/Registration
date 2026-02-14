@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace Registration.Services
 {
-    /// <summary>
-    /// Сервис для отправки email через SMTP Yandex.
-    /// </summary>
     public class EmailService
     {
         private readonly string _smtpHost = "smtp.yandex.ru";
@@ -40,6 +37,7 @@ namespace Registration.Services
         /// <returns>True если письмо отправлено успешно</returns>
         public async Task<bool> SendCodeAsync(string toEmail, string subject, string code)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             try
             {
                 using (var client = new SmtpClient(_smtpHost, _smtpPort))
@@ -47,7 +45,8 @@ namespace Registration.Services
                     client.UseDefaultCredentials = false;
                     client.Credentials = new NetworkCredential(_fromEmail, _password);
                     client.EnableSsl = true;
-                    client.Timeout = 30000; // 30 секунд таймаут
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    client.Timeout = 30000;
 
                     var message = new MailMessage
                     {
@@ -86,6 +85,7 @@ namespace Registration.Services
                     client.UseDefaultCredentials = false;
                     client.Credentials = new NetworkCredential(_fromEmail, _password);
                     client.EnableSsl = true;
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
                     client.Timeout = 30000;
 
                     var message = new MailMessage
@@ -127,6 +127,7 @@ namespace Registration.Services
                     client.UseDefaultCredentials = false;
                     client.Credentials = new NetworkCredential(_fromEmail, _password);
                     client.EnableSsl = true;
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
                     client.Timeout = 30000;
 
                     var message = new MailMessage

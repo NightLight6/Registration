@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Registration.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="800"
       Title="Редактирование сотрудника"
       Background="{StaticResource DarkBackground}">
 
@@ -15,7 +15,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок с фото -->
         <Border Grid.Row="0" 
                 Background="{StaticResource DarkSurface}" 
                 CornerRadius="12" 
@@ -31,8 +30,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
-                <!-- Фото пользователя -->
+
                 <Border Grid.Column="0" 
                         Width="120" 
                         Height="120" 
@@ -60,13 +58,13 @@
                                    Visibility="Visible"/>
                     </Grid>
                 </Border>
-                
+
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <Button Content="📷 Выбрать фото" 
+                    <Button Content="Выбрать фото" 
                             Click="btnSelectPhoto_Click" 
                             Padding="16,10" 
                             Width="180"
-                            Height="51"
+                            Height="50"
                             FontSize="14"
                             Margin="0,0,0,10"/>
                     <TextBlock Text="Рекомендуемый размер: 200x200px" 
@@ -76,7 +74,6 @@
             </Grid>
         </Border>
 
-        <!-- Форма редактирования -->
         <Border Grid.Row="1" 
                 Background="{StaticResource DarkSurface}" 
                 CornerRadius="12" 
@@ -108,45 +105,45 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="Логин*" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <TextBox x:Name="txtLogin" Grid.Row="0" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <TextBox x:Name="txtLogin" Grid.Row="0" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Имя*" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <TextBox x:Name="txtName" Grid.Row="1" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <TextBox x:Name="txtName" Grid.Row="1" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Фамилия*" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <TextBox x:Name="txtSurname" Grid.Row="2" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <TextBox x:Name="txtSurname" Grid.Row="2" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Отчество" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <TextBox x:Name="txtOtchestvo" Grid.Row="3" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <TextBox x:Name="txtOtchestvo" Grid.Row="3" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Email*" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <TextBox x:Name="txtEmail" Grid.Row="4" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <TextBox x:Name="txtEmail" Grid.Row="4" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Телефон" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <TextBox x:Name="txtPhone" Grid.Row="5" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <TextBox x:Name="txtPhone" Grid.Row="5" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Должность" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <TextBox x:Name="txtPosition" Grid.Row="6" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <TextBox x:Name="txtPosition" Grid.Row="6" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Роль*" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <ComboBox x:Name="cmbRoles" Grid.Row="7" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <ComboBox x:Name="cmbRoles" Grid.Row="7" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center"/>
 
                     <TextBlock Text="Статус" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <ComboBox x:Name="cmbStatus" Grid.Row="8" Grid.Column="1" Margin="10,8" Height="46">
+                    <ComboBox x:Name="cmbStatus" Grid.Row="8" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center">
                         <ComboBoxItem Content="Активен"/>
                         <ComboBoxItem Content="Неактивен"/>
                     </ComboBox>
 
                     <TextBlock Text="Пароль*" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <PasswordBox x:Name="pbPassword" Grid.Row="9" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <PasswordBox x:Name="pbPassword" Grid.Row="9" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <TextBlock Text="Подтверждение*" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" FontSize="14"/>
-                    <PasswordBox x:Name="pbConfirm" Grid.Row="10" Grid.Column="1" Margin="10,8" Height="46"/>
+                    <PasswordBox x:Name="pbConfirm" Grid.Row="10" Grid.Column="1" Margin="10,8" Height="50" VerticalContentAlignment="Center" Padding="10,0"/>
 
                     <StackPanel Grid.Row="11" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,0">
-                        <Button Content="💾 Сохранить" Click="btnSave_Click" Width="140" Margin="8" Padding="18,12" Height="48" FontSize="14" FontWeight="Bold"/>
-                        <Button Content="🔄 Очистить" Click="btnClear_Click" Width="130" Margin="8" Padding="18,12" Height="48" FontSize="14"/>
-                        <Button Content="← Назад" Click="btnBack_Click" Width="120" Margin="8" Padding="18,12" Height="48" FontSize="14" Background="{StaticResource DarkCard}" Foreground="{StaticResource TextPrimary}"/>
+                        <Button Content="Сохранить" Click="btnSave_Click" Width="150" Margin="8" Height="50" FontSize="14" FontWeight="Bold"/>
+                        <Button Content="Очистить" Click="btnClear_Click" Width="130" Margin="8" Height="50" FontSize="14"/>
+                        <Button Content="← Назад" Click="btnBack_Click" Width="120" Margin="8" Height="50" FontSize="14" Background="{StaticResource DarkCard}" Foreground="{StaticResource TextPrimary}"/>
                     </StackPanel>
                 </Grid>
             </ScrollViewer>

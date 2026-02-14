@@ -21,79 +21,117 @@ namespace Registration.Pages
         {
             InitializeComponent();
             _user = user;
+
+            this.Loaded += UserEditPage_Loaded;
+        }
+
+        private void UserEditPage_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadRoles();
             LoadFormData();
         }
 
         private void LoadRoles()
         {
-            cmbRoles.Items.Clear();
-            using (var context = new BeermageEntities1())
+            try
             {
-                foreach (var role in context.Roles)
+                using (var context = new BeermageEntities1())
                 {
-                    cmbRoles.Items.Add(new ComboBoxItem { Content = role.RoleName, Tag = role.RoleID });
+                    context.Configuration.ProxyCreationEnabled = false;
+                    var roles = context.Roles.AsNoTracking().ToList();
+
+                    cmbRoles.Items.Clear();
+                    foreach (var role in roles)
+                    {
+                        cmbRoles.Items.Add(new ComboBoxItem
+                        {
+                            Content = role.RoleName,
+                            Tag = role.RoleID
+                        });
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке ролей: {ex.Message}");
             }
         }
 
         private void LoadFormData()
         {
-            if (_user != null)
-            {
-                txtLogin.Text = _user.Login ?? "";
-                txtSurname.Text = _user.Surname ?? "";
-                txtName.Text = _user.Name ?? "";
-                txtOtchestvo.Text = _user.Otchestvo ?? "";
-                txtEmail.Text = _user.Email ?? "";
-                txtPhone.Text = _user.Phone ?? "";
-                txtPosition.Text = _user.Position ?? "";
-
-                var statusItem = cmbStatus.Items.Cast<ComboBoxItem>()
-                    .FirstOrDefault(i => i.Content.ToString() == (_user.Status ?? "Активен"));
-                cmbStatus.SelectedItem = statusItem ?? cmbStatus.Items[0];
-
-                var roleItem = cmbRoles.Items.Cast<ComboBoxItem>()
-                    .FirstOrDefault(r => (int)r.Tag == _user.RoleID);
-                if (roleItem != null)
-                    cmbRoles.SelectedItem = roleItem;
-
-                // Загрузка фото
-                if (!string.IsNullOrEmpty(_user.PhotoPath))
-                {
-                    try
-                    {
-                        string photoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _user.PhotoPath);
-                        if (File.Exists(photoPath))
-                        {
-                            imgPhoto.Source = new BitmapImage(new Uri(photoPath));
-                            imgPhoto.Visibility = Visibility.Visible;
-                            lblPlaceholder.Visibility = Visibility.Collapsed;
-                        }
-                        else
-                        {
-                            imgPhoto.Visibility = Visibility.Collapsed;
-                            lblPlaceholder.Visibility = Visibility.Visible;
-                        }
-                    }
-                    catch
-                    {
-                        imgPhoto.Visibility = Visibility.Collapsed;
-                        lblPlaceholder.Visibility = Visibility.Visible;
-                    }
-                }
-                else
-                {
-                    imgPhoto.Visibility = Visibility.Collapsed;
-                    lblPlaceholder.Visibility = Visibility.Visible;
-                }
-            }
-            else
+            if (_user == null)
             {
                 cmbStatus.SelectedIndex = 0;
                 imgPhoto.Visibility = Visibility.Collapsed;
                 lblPlaceholder.Visibility = Visibility.Visible;
+                return;
             }
+
+            txtLogin.Text = _user.Login ?? "";
+            txtSurname.Text = _user.Surname ?? "";
+            txtName.Text = _user.Name ?? "";
+            txtOtchestvo.Text = _user.Otchestvo ?? "";
+            txtEmail.Text = _user.Email ?? "";
+            txtPhone.Text = _user.Phone ?? "";
+            txtPosition.Text = _user.Position ?? "";
+
+            foreach (ComboBoxItem item in cmbStatus.Items)
+            {
+                if (item.Content.ToString() == (_user.Status ?? "Активен"))
+                {
+                    cmbStatus.SelectedItem = item;
+                    break;
+                }
+            }
+
+            foreach (ComboBoxItem item in cmbRoles.Items)
+            {
+                if (item.Tag != null && (int)item.Tag == _user.RoleID)
+                {
+                    cmbRoles.SelectedItem = item;
+                    break;
+                }
+            }
+
+            LoadUserPhoto();
+
+        }
+
+        private void LoadUserPhoto()
+        {
+            if (!string.IsNullOrEmpty(_user.PhotoPath))
+            {
+                try
+                {
+                    string photoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _user.PhotoPath);
+                    if (File.Exists(photoPath))
+                    {
+                        var bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(photoPath);
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+
+                        imgPhoto.Source = bitmap;
+                        imgPhoto.Visibility = Visibility.Visible;
+                        lblPlaceholder.Visibility = Visibility.Collapsed;
+                    }
+                }
+                catch
+                {
+                    ShowPlaceholder();
+                }
+            }
+            else
+            {
+                ShowPlaceholder();
+            }
+        }
+
+        private void ShowPlaceholder()
+        {
+            imgPhoto.Visibility = Visibility.Collapsed;
+            lblPlaceholder.Visibility = Visibility.Visible;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -101,30 +139,24 @@ namespace Registration.Pages
             var selectedRoleItem = cmbRoles.SelectedItem as ComboBoxItem;
             if (selectedRoleItem == null)
             {
-                MessageBox.Show("Выберите роль.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Выберите роль.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             string passwordHash = _user?.PasswordHash;
-
-            if (_user == null)
+            if (!string.IsNullOrWhiteSpace(pbPassword.Password))
             {
-                string pwd = pbPassword.Password;
-                string confirm = pbConfirm.Password;
-
-                if (string.IsNullOrWhiteSpace(pwd))
+                if (pbPassword.Password != pbConfirm.Password)
                 {
-                    MessageBox.Show("Пароль обязателен при создании пользователя.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Пароли не совпадают!");
                     return;
                 }
-
-                if (pwd != confirm)
-                {
-                    MessageBox.Show("Пароли не совпадают.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                passwordHash = PasswordHasher.ComputeSha256Hash(pwd);
+                passwordHash = PasswordHasher.ComputeSha256Hash(pbPassword.Password);
+            }
+            else if (_user == null)
+            {
+                MessageBox.Show("Пароль обязателен для нового пользователя!");
+                return;
             }
 
             var viewModel = new UserViewModel
@@ -132,60 +164,29 @@ namespace Registration.Pages
                 Login = txtLogin.Text.Trim(),
                 Surname = txtSurname.Text.Trim(),
                 Name = txtName.Text.Trim(),
-                Otchestvo = string.IsNullOrWhiteSpace(txtOtchestvo.Text) ? null : txtOtchestvo.Text.Trim(),
+                Otchestvo = txtOtchestvo.Text.Trim(),
                 Email = txtEmail.Text.Trim(),
-                Phone = string.IsNullOrWhiteSpace(txtPhone.Text) ? null : txtPhone.Text.Trim(),
-                Position = string.IsNullOrWhiteSpace(txtPosition.Text) ? null : txtPosition.Text.Trim(),
+                Phone = txtPhone.Text.Trim(),
+                Position = txtPosition.Text.Trim(),
                 RoleID = (int)selectedRoleItem.Tag,
-                Status = (cmbStatus.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Активен",
+                Status = (cmbStatus.SelectedItem as ComboBoxItem)?.Content?.ToString(),
                 PasswordHash = passwordHash
             };
 
-            try
-            {
-                var validator = new UserViewModelValidator();
-                var errors = validator.Validate(viewModel);
+            SaveToDatabase(viewModel);
+        }
 
-                if (errors.Count > 0)
-                {
-                    string errorMsg = string.Join("\n", errors.Select(er =>
-                        $"{(er.MemberNames.Any() ? $"{string.Join(", ", er.MemberNames)}: " : "")}{er.ErrorMessage}"));
-
-                    MessageBox.Show($"Ошибки ввода:\n{errorMsg}",
-                                    "Ошибка валидации",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Warning);
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при валидации: {ex.Message}",
-                                "Критическая ошибка",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
-                return;
-            }
-
+        private void SaveToDatabase(UserViewModel viewModel)
+        {
             try
             {
                 using (var context = new BeermageEntities1())
                 {
-                    Users userToSave;
-                    if (_user == null)
-                    {
-                        userToSave = new Users();
-                        context.Users.Add(userToSave);
-                    }
-                    else
-                    {
-                        userToSave = context.Users.FirstOrDefault(u => u.UserID == _user.UserID);
-                        if (userToSave == null)
-                        {
-                            MessageBox.Show("Пользователь не найден в базе данных.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-                    }
+                    Users userToSave = _user == null
+                        ? new Users()
+                        : context.Users.FirstOrDefault(u => u.UserID == _user.UserID);
+
+                    if (userToSave == null) return;
 
                     userToSave.Login = viewModel.Login;
                     userToSave.Surname = viewModel.Surname;
@@ -200,74 +201,41 @@ namespace Registration.Pages
 
                     if (!string.IsNullOrEmpty(_selectedPhotoPath))
                     {
-                        string fileName = $"user_{(userToSave.UserID == 0 ? DateTime.Now.Ticks : userToSave.UserID)}_{Path.GetFileName(_selectedPhotoPath)}";
+                        string fileName = $"user_{Guid.NewGuid()}{Path.GetExtension(_selectedPhotoPath)}";
                         string photosDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UserPhotos");
                         Directory.CreateDirectory(photosDir);
-                        string destinationPath = Path.Combine(photosDir, fileName);
-                        File.Copy(_selectedPhotoPath, destinationPath, true);
+                        string dest = Path.Combine(photosDir, fileName);
+                        File.Copy(_selectedPhotoPath, dest, true);
                         userToSave.PhotoPath = $"UserPhotos/{fileName}";
                     }
 
+                    if (_user == null) context.Users.Add(userToSave);
                     context.SaveChanges();
-                    MessageBox.Show("Сохранено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                    NavigationService?.GoBack();
+
+                    MessageBox.Show("Данные сохранены успешно!");
+                    NavigationService.GoBack();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка: {ex.Message}");
             }
-        }
-
-        private void btnClear_Click(object sender, RoutedEventArgs e)
-        {
-            if (_user == null)
-            {
-                foreach (var ctrl in this.FindVisualChildren<TextBox>()) ctrl.Clear();
-                pbPassword.Clear();
-                pbConfirm.Clear();
-                cmbRoles.SelectedIndex = -1;
-                cmbStatus.SelectedIndex = 0;
-            }
-            else
-            {
-                LoadFormData();
-            }
-        }
-
-        private void btnBack_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService?.GoBack();
         }
 
         private void btnSelectPhoto_Click(object sender, RoutedEventArgs e)
         {
-            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            var op = new Microsoft.Win32.OpenFileDialog { Filter = "Images|*.jpg;*.png;*.jpeg" };
+            if (op.ShowDialog() == true)
             {
-                Filter = "Изображения (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp|Все файлы (*.*)|*.*"
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                _selectedPhotoPath = openFileDialog.FileName;
+                _selectedPhotoPath = op.FileName;
                 imgPhoto.Source = new BitmapImage(new Uri(_selectedPhotoPath));
                 imgPhoto.Visibility = Visibility.Visible;
                 lblPlaceholder.Visibility = Visibility.Collapsed;
             }
         }
-    }
 
-    public static class VisualTreeHelperExtensions
-    {
-        public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject depObj) where T : DependencyObject
-        {
-            if (depObj == null) yield break;
-            for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(depObj); i++)
-            {
-                var child = System.Windows.Media.VisualTreeHelper.GetChild(depObj, i);
-                if (child is T t) yield return t;
-                foreach (var childOfChild in FindVisualChildren<T>(child)) yield return childOfChild;
-            }
-        }
+        private void btnBack_Click(object sender, RoutedEventArgs e) => NavigationService.GoBack();
+
+        private void btnClear_Click(object sender, RoutedEventArgs e) => LoadFormData();
     }
 }

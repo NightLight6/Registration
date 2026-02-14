@@ -3,152 +3,134 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Registration.Services;
+using System.Windows.Navigation;
+using System.Data.Entity;
 using Registration.Model;
 
 namespace Registration.Pages
 {
     public partial class UserListPage : Page
     {
-        private BeermageEntities1 _context = new BeermageEntities1();
-        private IQueryable<Users> _allUsers = Enumerable.Empty<Users>().AsQueryable();
+        private List<Users> _allUsers = new List<Users>();
 
         public UserListPage()
         {
             InitializeComponent();
-            this.Loaded += (s, e) => LoadData();
+            this.Loaded += UserListPage_Loaded;
         }
+
         private void UserListPage_Loaded(object sender, RoutedEventArgs e)
         {
             LoadData();
         }
+
         private void LoadData()
         {
             try
             {
                 using (var context = new BeermageEntities1())
                 {
-                    var users = context.Users.Include("Roles").ToList();
+                    context.Configuration.ProxyCreationEnabled = false;
+                    context.Configuration.LazyLoadingEnabled = false;
 
-                    _allUsers = users.AsQueryable();
-                    lvUsers.ItemsSource = users;
+                    var users = context.Users
+                                       .Include(u => u.Roles)
+                                       .AsNoTracking()
+                                       .ToList();
+
+                    _allUsers = users;
+
+                    if (lvUsers != null)
+                    {
+                        lvUsers.ItemsSource = users;
+                    }
+
+                    var roles = context.Roles.AsNoTracking().ToList();
+
+                    cmbRolesFilter.SelectionChanged -= cmbRolesFilter_SelectionChanged;
 
                     cmbRolesFilter.Items.Clear();
                     cmbRolesFilter.Items.Add(new ComboBoxItem { Content = "Все роли", Tag = "-1" });
-                    foreach (var role in context.Roles)
+
+                    foreach (var role in roles)
                     {
-                        cmbRolesFilter.Items.Add(new ComboBoxItem { Content = role.RoleName, Tag = role.RoleID.ToString() });
+                        cmbRolesFilter.Items.Add(new ComboBoxItem
+                        {
+                            Content = role.RoleName,
+                            Tag = role.RoleID.ToString()
+                        });
                     }
                     cmbRolesFilter.SelectedIndex = 0;
+
+                    cmbRolesFilter.SelectionChanged += cmbRolesFilter_SelectionChanged;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                lvUsers.ItemsSource = new List<Users>();
+                MessageBox.Show($"Ошибка загрузки: {ex.Message}");
             }
         }
 
         private void FilterUsers()
         {
-            string searchText = txtSearch.Text?.ToLower() ?? "";
-            string selectedTag = (cmbRolesFilter.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+            if (lvUsers == null || cmbRolesFilter == null || txtSearch == null)
+                return;
 
-            if (string.IsNullOrEmpty(selectedTag))
-            {
-                selectedTag = "-1";
-            }
+            string searchText = txtSearch.Text?.Trim().ToLower() ?? "";
+            var selectedItem = cmbRolesFilter.SelectedItem as ComboBoxItem;
+            string selectedTag = selectedItem?.Tag?.ToString() ?? "-1";
 
             var filtered = _allUsers.Where(u =>
                 (string.IsNullOrEmpty(searchText) ||
-                 u.Login.ToLower().Contains(searchText) ||
-                 u.Name.ToLower().Contains(searchText) ||
-                 u.Surname.ToLower().Contains(searchText) ||
+                 (u.Login != null && u.Login.ToLower().Contains(searchText)) ||
+                 (u.Name != null && u.Name.ToLower().Contains(searchText)) ||
+                 (u.Surname != null && u.Surname.ToLower().Contains(searchText)) ||
                  (u.Email != null && u.Email.ToLower().Contains(searchText))) &&
                 (selectedTag == "-1" || u.RoleID.ToString() == selectedTag)
-            );
+            ).ToList();
 
-            if (lvUsers != null)
-            {
-                lvUsers.ItemsSource = filtered.ToList();
-            }
+            lvUsers.ItemsSource = filtered;
         }
 
+        private void txtSearch_KeyUp(object sender, System.Windows.Input.KeyEventArgs e) => FilterUsers();
 
-        private void txtSearch_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            FilterUsers();
-        }
+        private void cmbRolesFilter_SelectionChanged(object sender, SelectionChangedEventArgs e) => FilterUsers();
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService.Navigate(new UserEditPage(null));
-        }
+        private void btnAdd_Click(object sender, RoutedEventArgs e) => NavigationService.Navigate(new UserEditPage(null));
 
         private void lvUsers_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (lvUsers.SelectedItem is Users user)
-            {
                 NavigationService.Navigate(new UserEditPage(user));
-            }
         }
+
         private void MenuItem_Edit_Click(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            if (menuItem == null) return;
-
-            var selectedUser = lvUsers.SelectedItem as Users;
-            if (selectedUser == null) return;
-
-            NavigationService.Navigate(new UserEditPage(selectedUser));
+            if (lvUsers.SelectedItem is Users selectedUser)
+                NavigationService.Navigate(new UserEditPage(selectedUser));
         }
 
         private void MenuItem_Delete_Click(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            if (menuItem == null) return;
+            if (!(lvUsers.SelectedItem is Users selectedUser)) return;
 
-            var selectedUser = lvUsers.SelectedItem as Users;
-            if (selectedUser == null) return;
-
-            var result = MessageBox.Show(
-                $"Вы действительно хотите удалить сотрудника {selectedUser.Name} {selectedUser.Surname}?",
-                "Подтверждение удаления",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            if (MessageBox.Show($"Удалить {selectedUser.Name}?", "Удаление", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 try
                 {
                     using (var context = new BeermageEntities1())
                     {
-                        var userToDelete = context.Users.FirstOrDefault(u => u.UserID == selectedUser.UserID);
-                        if (userToDelete != null)
+                        var user = context.Users.FirstOrDefault(u => u.UserID == selectedUser.UserID);
+                        if (user != null)
                         {
-                            context.Users.Remove(userToDelete);
+                            context.Users.Remove(user);
                             context.SaveChanges();
-
                             LoadData();
-                            MessageBox.Show("Сотрудник успешно удален.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                catch (Exception ex) { MessageBox.Show(ex.Message); }
             }
-        }
-
-        private void lvUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void cmbRolesFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            FilterUsers();
         }
     }
 }
