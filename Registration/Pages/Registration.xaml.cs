@@ -4,8 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.ComponentModel.DataAnnotations;
 using Registration.Model;
 using Registration.Services;
 using Registration.Helpers;
@@ -84,7 +82,7 @@ namespace Registration.Pages
 
             try
             {
-                var validator = new UserViewModelValidator(); // ← убедитесь, что имя класса и using правильные
+                var validator = new UserViewModelValidator();
                 var errors = validator.Validate(viewModel);
 
                 if (errors.Count > 0)

@@ -67,7 +67,7 @@ namespace Registration.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки: {ex.Message}");
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -114,7 +114,12 @@ namespace Registration.Pages
         {
             if (!(lvUsers.SelectedItem is Users selectedUser)) return;
 
-            if (MessageBox.Show($"Удалить {selectedUser.Name}?", "Удаление", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            var result = MessageBox.Show($"Вы уверены, что хотите удалить пользователя {selectedUser.Name} {selectedUser.Surname}?",
+                                         "Подтверждение удаления",
+                                         MessageBoxButton.YesNo,
+                                         MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
@@ -129,8 +134,15 @@ namespace Registration.Pages
                         }
                     }
                 }
-                catch (Exception ex) { MessageBox.Show(ex.Message); }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
+        }
+
+        private void lvUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
         }
     }
 }

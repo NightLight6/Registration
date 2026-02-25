@@ -13,9 +13,10 @@
         <Border Grid.Row="0" Background="{StaticResource DarkSurface}" 
                 BorderBrush="{StaticResource BorderColor}" BorderThickness="0,0,0,1" Height="60">
             <Grid Margin="15,0">
-                <Button x:Name="btnBack" Content="← Назад" Click="btnBack_Click" 
-                        Visibility="Collapsed" Width="100" Height="35" HorizontalAlignment="Left"
-                        Background="{StaticResource DarkCard}" Foreground="White"/>
+                <Button x:Name="btnBack"  Content="← Назад" Click="btnBack_Click" 
+                        Visibility="Collapsed" Width="100" Height="35" HorizontalAlignment="Left" 
+                        FontSize="13" Padding="5,0" Background="Transparent" 
+                        Foreground="{StaticResource TextPrimary}" BorderThickness="0"/>
 
                 <StackPanel x:Name="spUserControls" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
                     <TextBlock x:Name="tblUserName" Text="Пользователь" Foreground="White" 
@@ -26,7 +27,7 @@
                         <Button.Clip>
                             <EllipseGeometry Center="20,20" RadiusX="20" RadiusY="20"/>
                         </Button.Clip>
-                        <TextBlock Text="👤" Foreground="White" FontSize="18"/>
+                        <TextBlock Text="👤" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0"/>
                     </Button>
 
                     <Button x:Name="btnLogout" Content="Выйти" Click="btnLogout_Click" 

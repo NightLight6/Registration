@@ -20,10 +20,12 @@ namespace Registration
             if (e.Content is AuthPage || e.Content is RegistrationPage)
             {
                 spUserControls.Visibility = Visibility.Collapsed;
+                btnBack.Visibility = Visibility.Collapsed;
             }
             else
             {
                 spUserControls.Visibility = Visibility.Visible;
+
                 if (AuthPage.CurrentUser != null)
                 {
                     tblUserName.Text = AuthPage.CurrentUser.Name;
@@ -33,8 +35,12 @@ namespace Registration
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-            if (MainFrame.CanGoBack) MainFrame.GoBack();
+            if (MainFrame.CanGoBack)
+            {
+                MainFrame.GoBack();
+            }
         }
+
         private void btnProfile_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new ProfilePage());
@@ -46,7 +52,11 @@ namespace Registration
             {
                 AuthPage.CurrentUser = null;
                 MainFrame.Navigate(new AuthPage());
-                while (MainFrame.CanGoBack) MainFrame.RemoveBackEntry();
+
+                while (MainFrame.CanGoBack)
+                {
+                    MainFrame.RemoveBackEntry();
+                }
             }
         }
     }

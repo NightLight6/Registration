@@ -56,10 +56,10 @@
                         <TextBlock Text="Изменить пароль" FontSize="18" Foreground="White" Margin="0,0,0,15"/>
 
                         <TextBlock Text="Новый пароль" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5"/>
-                        <PasswordBox x:Name="pbNewPass" Height="50" Margin="0,0,0,15"/>
+                        <PasswordBox x:Name="pbNewPass" FontSize="14" Height="50" Margin="0,0,0,15"/>
 
                         <TextBlock Text="Подтвердите пароль" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5"/>
-                        <PasswordBox x:Name="pbConfirmPass" Height="50" Margin="0,0,0,15"/>
+                        <PasswordBox x:Name="pbConfirmPass" FontSize="14" Height="50" Margin="0,0,0,15"/>
 
                         <Button Content="Обновить пароль" Click="BtnUpdatePassword_Click" Background="{StaticResource PrimaryColor}" Foreground="White" Width="180" Height="48" HorizontalAlignment="Left"/>
                     </StackPanel>

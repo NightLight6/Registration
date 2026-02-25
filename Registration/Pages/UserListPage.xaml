@@ -99,21 +99,16 @@
             <ListView Name="lvUsers" 
                       Background="Transparent"
                       BorderThickness="0"
-                      MouseDoubleClick="lvUsers_MouseDoubleClick">
+                      MouseDoubleClick="lvUsers_MouseDoubleClick"
+                      SelectionChanged="lvUsers_SelectionChanged">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Фото" Width="80">
                             <GridViewColumn.CellTemplate>
-                                <DataTemplate DataType="{x:Type models:Users}">
+                                <DataTemplate>
                                     <Border Width="50" Height="50" CornerRadius="25" ClipToBounds="True">
-                                        <Image Stretch="UniformToFill">
-                                            <Image.Source>
-                                                <MultiBinding Converter="{StaticResource PhotoConverter}">
-                                                    <Binding Path="PhotoPath"/>
-                                                    <Binding Source="{x:Static Application.Current}"/>
-                                                </MultiBinding>
-                                            </Image.Source>
-                                        </Image>
+                                        <Image Stretch="UniformToFill" 
+                       Source="{Binding ImagePath, Converter={StaticResource PhotoConverter}}"/>
                                     </Border>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

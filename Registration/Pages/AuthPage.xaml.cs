@@ -19,7 +19,9 @@ namespace Registration.Pages
         private DispatcherTimer _blockTimer;
         private string _captchaText = "";
         private string _currentRecoveryEmail = "";
+
         private Users _userForTwoFactor = null;
+        private string _roleForTwoFactor = "Клиент";
 
         private readonly EmailService _emailService = new EmailService(
             "NightooLight@yandex.ru",
@@ -40,6 +42,7 @@ namespace Registration.Pages
             spNewPassword.Visibility = Visibility.Collapsed;
             spTwoFactor.Visibility = Visibility.Collapsed;
             spMainAuth.Visibility = Visibility.Visible;
+            brCaptcha.Visibility = _failedAttempts > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private async void BtnEnter_Click(object sender, RoutedEventArgs e)
@@ -53,15 +56,15 @@ namespace Registration.Pages
 
                 if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
                 {
-                    MessageBox.Show("Введите логин и пароль.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Заполните все поля", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (brCaptcha.Visibility == Visibility.Visible)
                 {
-                    if (tbCaptcha.Text.Trim().ToLower() != _captchaText.ToLower())
+                    if (string.IsNullOrWhiteSpace(tbCaptcha.Text) || tbCaptcha.Text.Trim().ToLower() != _captchaText.ToLower())
                     {
-                        MessageBox.Show("Неверная капча!");
+                        MessageBox.Show("Неверный код капчи!");
                         ShowCaptcha();
                         return;
                     }
@@ -75,13 +78,14 @@ namespace Registration.Pages
 
                     if (user != null)
                     {
+                        string roleName = user.Roles?.RoleName ?? "Клиент";
+
                         if (user.IsTwoFactorEnabled == true)
                         {
-
                             _userForTwoFactor = user;
+                            _roleForTwoFactor = roleName;
 
                             string code = new Random().Next(1000, 9999).ToString();
-
                             CodeStorage.StoreCode(user.UserID.ToString(), code, TimeSpan.FromMinutes(5));
 
                             spMainAuth.Visibility = Visibility.Collapsed;
@@ -89,19 +93,24 @@ namespace Registration.Pages
                             tbTwoFactorEmail.Text = user.Email;
 
                             await _emailService.SendTwoFactorCodeAsync(user.Email, code);
-
                             MessageBox.Show($"Код подтверждения отправлен на {user.Email}", "2FA");
                         }
                         else
                         {
-                            FinalizeLogin(user);
+                            FinalizeLogin(user, roleName);
                         }
                     }
                     else
                     {
                         _failedAttempts++;
-                        if (_failedAttempts >= 3) BlockUI();
-                        else ShowCaptcha();
+                        if (_failedAttempts >= 3)
+                        {
+                            BlockUI();
+                        }
+                        else
+                        {
+                            ShowCaptcha();
+                        }
                         MessageBox.Show("Неверный логин или пароль.");
                     }
                 }
@@ -130,15 +139,13 @@ namespace Registration.Pages
                     return;
                 }
 
-                string key = _userForTwoFactor.UserID.ToString();
-
-                if (CodeStorage.ValidateCode(key, input))
+                if (CodeStorage.ValidateCode(_userForTwoFactor.UserID.ToString(), input))
                 {
-                    FinalizeLogin(_userForTwoFactor);
+                    FinalizeLogin(_userForTwoFactor, _roleForTwoFactor);
                 }
                 else
                 {
-                    MessageBox.Show("Неверный код или срок его действия истек (5 мин)");
+                    MessageBox.Show("Неверный код или срок действия истек.");
                     tbTwoFactorCode.Clear();
                 }
             }
@@ -148,28 +155,19 @@ namespace Registration.Pages
             }
         }
 
-        private void FinalizeLogin(Users user)
+        private void FinalizeLogin(Users user, string roleName)
         {
             CurrentUser = user;
-
-            string roleName = "Клиент";
-            if (user.Roles != null)
-            {
-                roleName = user.Roles.RoleName;
-            }
-
-            MessageBox.Show($"Добро пожаловать, {user.Name}!");
+            MessageBox.Show($"Добро пожаловать, {user.Name}! Роль: {roleName}");
             NavigateToRolePage(user, roleName);
         }
-
 
         private void ShowCaptcha()
         {
             _captchaText = CaptchaGenerator.GenerateCaptchaText(6);
             tblCaptcha.Text = _captchaText;
-            tblCaptcha.Visibility = Visibility.Visible;
-            tbCaptcha.Visibility = Visibility.Visible;
             brCaptcha.Visibility = Visibility.Visible;
+            tbCaptcha.Clear();
         }
 
         private void BlockUI()
@@ -215,7 +213,7 @@ namespace Registration.Pages
             using (var ctx = new BeermageEntities1())
             {
                 var user = ctx.Users.FirstOrDefault(u => u.Email == email);
-                if (user == null) { MessageBox.Show("Email не найден"); return; }
+                if (user == null) { MessageBox.Show("Пользователь с такой почтой не найден"); return; }
 
                 string code = new Random().Next(1000, 9999).ToString();
                 CodeStorage.StoreCode(email, code, TimeSpan.FromMinutes(5));
@@ -235,11 +233,20 @@ namespace Registration.Pages
                 spRecoveryCode.Visibility = Visibility.Collapsed;
                 spNewPassword.Visibility = Visibility.Visible;
             }
+            else
+            {
+                MessageBox.Show("Неверный код");
+            }
         }
 
         private void BtnSaveNewPassword_Click(object sender, RoutedEventArgs e)
         {
-            if (pbNewPassword.Password != pbConfirmPassword.Password) return;
+            if (pbNewPassword.Password != pbConfirmPassword.Password || string.IsNullOrEmpty(pbNewPassword.Password))
+            {
+                MessageBox.Show("Пароли не совпадают или пусты!");
+                return;
+            }
+
             using (var ctx = new BeermageEntities1())
             {
                 var user = ctx.Users.FirstOrDefault(u => u.Email == _currentRecoveryEmail);
@@ -247,7 +254,7 @@ namespace Registration.Pages
                 {
                     user.PasswordHash = PasswordHasher.ComputeSha256Hash(pbNewPassword.Password);
                     ctx.SaveChanges();
-                    MessageBox.Show("Успешно!");
+                    MessageBox.Show("Пароль успешно изменен!");
                     NavigationService.Navigate(new AuthPage());
                 }
             }
