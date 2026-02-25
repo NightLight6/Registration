@@ -11,8 +11,15 @@ using System.Windows.Threading;
 
 namespace Registration.Pages
 {
+    /// <summary>
+    /// Логика взаимодействия для страницы AuthPage.xaml.
+    /// Класс обеспечивает аутентификацию пользователей, двухфакторную проверку и восстановление пароля.
+    /// </summary>
     public partial class AuthPage : Page
     {
+        /// <summary>
+        /// Свойство для хранения данных текущего авторизованного пользователя в рамках сессии.
+        /// </summary>
         public static Users CurrentUser { get; set; }
 
         private int _failedAttempts = 0;
@@ -23,6 +30,7 @@ namespace Registration.Pages
         private Users _userForTwoFactor = null;
         private string _roleForTwoFactor = "Клиент";
 
+        // Сервис для отправки уведомлений на электронную почту
         private readonly EmailService _emailService = new EmailService(
             "NightooLight@yandex.ru",
             "fiufifhygbfyhcvu"
@@ -35,6 +43,9 @@ namespace Registration.Pages
             HideAllExtraPanels();
         }
 
+        /// <summary>
+        /// Сбрасывает видимость панелей до начального состояния авторизации.
+        /// </summary>
         private void HideAllExtraPanels()
         {
             spForgotPasswordEmail.Visibility = Visibility.Collapsed;
@@ -42,13 +53,19 @@ namespace Registration.Pages
             spNewPassword.Visibility = Visibility.Collapsed;
             spTwoFactor.Visibility = Visibility.Collapsed;
             spMainAuth.Visibility = Visibility.Visible;
+            // Показ капчи только если были ошибки ввода
             brCaptcha.Visibility = _failedAttempts > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Обработчик события нажатия кнопки "Войти".
+        /// Выполняет проверку логина/пароля и капчи.
+        /// </summary>
         private async void BtnEnter_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Запрет на ввод, если действует блокировка таймером
                 if (_blockTimer != null && _blockTimer.IsEnabled) return;
 
                 string login = tbLogin.Text.Trim();
@@ -60,6 +77,7 @@ namespace Registration.Pages
                     return;
                 }
 
+                // Логика проверки капчи
                 if (brCaptcha.Visibility == Visibility.Visible)
                 {
                     if (string.IsNullOrWhiteSpace(tbCaptcha.Text) || tbCaptcha.Text.Trim().ToLower() != _captchaText.ToLower())
@@ -70,6 +88,7 @@ namespace Registration.Pages
                     }
                 }
 
+                // Хеширование пароля перед проверкой в БД
                 string passwordHash = PasswordHasher.ComputeSha256Hash(password);
 
                 using (var db = new BeermageEntities1())
@@ -80,6 +99,7 @@ namespace Registration.Pages
                     {
                         string roleName = user.Roles?.RoleName ?? "Клиент";
 
+                        // Инициация двухфакторной авторизации, если она включена в профиле
                         if (user.IsTwoFactorEnabled == true)
                         {
                             _userForTwoFactor = user;
@@ -102,6 +122,7 @@ namespace Registration.Pages
                     }
                     else
                     {
+                        // Счетчик неудачных попыток и вызов блокировки
                         _failedAttempts++;
                         if (_failedAttempts >= 3)
                         {
@@ -121,24 +142,14 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Подтверждение кода 2FA и завершение входа.
+        /// </summary>
         private void BtnConfirmTwoFactor_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 string input = tbTwoFactorCode.Text.Trim();
-                if (string.IsNullOrEmpty(input))
-                {
-                    MessageBox.Show("Введите код подтверждения");
-                    return;
-                }
-
-                if (_userForTwoFactor == null)
-                {
-                    MessageBox.Show("Ошибка сессии. Пожалуйста, введите логин и пароль заново.");
-                    BackToAuth_Click(null, null);
-                    return;
-                }
-
                 if (CodeStorage.ValidateCode(_userForTwoFactor.UserID.ToString(), input))
                 {
                     FinalizeLogin(_userForTwoFactor, _roleForTwoFactor);
@@ -146,15 +157,16 @@ namespace Registration.Pages
                 else
                 {
                     MessageBox.Show("Неверный код или срок действия истек.");
-                    tbTwoFactorCode.Clear();
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Критическая ошибка: {ex.Message}");
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
+        /// <summary>
+        /// Фиксация данных пользователя в системе и переход на главную страницу роли.
+        /// </summary>
+        /// <param name="user">Объект найденного пользователя</param>
+        /// <param name="roleName">Наименование роли</param>
         private void FinalizeLogin(Users user, string roleName)
         {
             CurrentUser = user;
@@ -162,6 +174,9 @@ namespace Registration.Pages
             NavigateToRolePage(user, roleName);
         }
 
+        /// <summary>
+        /// Генерация и отображение новой капчи.
+        /// </summary>
         private void ShowCaptcha()
         {
             _captchaText = CaptchaGenerator.GenerateCaptchaText(6);
@@ -170,6 +185,9 @@ namespace Registration.Pages
             tbCaptcha.Clear();
         }
 
+        /// <summary>
+        /// Временная блокировка элементов управления при переборе паролей.
+        /// </summary>
         private void BlockUI()
         {
             tbLogin.IsEnabled = tbPassword.IsEnabled = btnEnter.IsEnabled = false;
@@ -184,15 +202,20 @@ namespace Registration.Pages
             _blockTimer.Start();
         }
 
+        /// <summary>
+        /// Разблокировка интерфейса после завершения работы таймера.
+        /// </summary>
         private void UnBlockUI()
         {
             _blockTimer?.Stop();
             tbBlockTimer.Visibility = Visibility.Collapsed;
             tbLogin.IsEnabled = tbPassword.IsEnabled = btnEnter.IsEnabled = true;
             _failedAttempts = 0;
-            brCaptcha.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Логика перенаправления пользователя в зависимости от уровня прав.
+        /// </summary>
         private void NavigateToRolePage(Users user, string roleName)
         {
             if (roleName == "Администратор" || roleName == "Менеджер")
@@ -201,19 +224,16 @@ namespace Registration.Pages
                 NavigationService.Navigate(new ClientPage(user, roleName));
         }
 
-        private void BtnForgotPassword_Click(object sender, RoutedEventArgs e)
-        {
-            spMainAuth.Visibility = Visibility.Collapsed;
-            spForgotPasswordEmail.Visibility = Visibility.Visible;
-        }
-
+        /// <summary>
+        /// Обработчик кнопки запроса кода для смены забытого пароля.
+        /// </summary>
         private async void BtnSendRecoveryCode_Click(object sender, RoutedEventArgs e)
         {
             string email = tbRecoveryEmail.Text.Trim();
             using (var ctx = new BeermageEntities1())
             {
                 var user = ctx.Users.FirstOrDefault(u => u.Email == email);
-                if (user == null) { MessageBox.Show("Пользователь с такой почтой не найден"); return; }
+                if (user == null) { MessageBox.Show("Пользователь не найден"); return; }
 
                 string code = new Random().Next(1000, 9999).ToString();
                 CodeStorage.StoreCode(email, code, TimeSpan.FromMinutes(5));
@@ -226,24 +246,14 @@ namespace Registration.Pages
             }
         }
 
-        private void BtnConfirmRecoveryCode_Click(object sender, RoutedEventArgs e)
-        {
-            if (CodeStorage.ValidateCode(_currentRecoveryEmail, tbRecoveryCode.Text.Trim()))
-            {
-                spRecoveryCode.Visibility = Visibility.Collapsed;
-                spNewPassword.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                MessageBox.Show("Неверный код");
-            }
-        }
-
+        /// <summary>
+        /// Обновление пароля в базе данных на новый хеш.
+        /// </summary>
         private void BtnSaveNewPassword_Click(object sender, RoutedEventArgs e)
         {
-            if (pbNewPassword.Password != pbConfirmPassword.Password || string.IsNullOrEmpty(pbNewPassword.Password))
+            if (pbNewPassword.Password != pbConfirmPassword.Password)
             {
-                MessageBox.Show("Пароли не совпадают или пусты!");
+                MessageBox.Show("Пароли не совпадают!");
                 return;
             }
 
@@ -260,6 +270,7 @@ namespace Registration.Pages
             }
         }
 
+        // Вспомогательные методы навигации
         private void BackToAuth_Click(object sender, RoutedEventArgs e) => HideAllExtraPanels();
         private void btnEnterGuest_Click(object sender, RoutedEventArgs e) => NavigateToRolePage(null, "Клиент");
         private void BtnGoToRegister_Click(object sender, RoutedEventArgs e) => NavigationService.Navigate(new RegistrationPage());

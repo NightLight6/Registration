@@ -11,20 +11,31 @@ using Registration.UserViewModelValidators;
 
 namespace Registration.Pages
 {
+    /// <summary>
+    /// Логика взаимодействия для страницы регистрации RegistrationPage.xaml.
+    /// Класс обеспечивает создание новых учетных записей пользователей с предварительной валидацией данных.
+    /// </summary>
     public partial class RegistrationPage : Page
     {
+        /// <summary>
+        /// Инициализирует новый экземпляр класса RegistrationPage.
+        /// </summary>
         public RegistrationPage()
         {
             InitializeComponent();
-            LoadRoles();
+            LoadRoles(); // Загрузка списка доступных ролей из базы данных
         }
 
+        /// <summary>
+        /// Загружает список ролей из базы данных и привязывает их к выпадающему списку cmbRole.
+        /// </summary>
         private void LoadRoles()
         {
             try
             {
                 using (var context = new BeermageEntities1())
                 {
+                    // Получаем все роли из таблицы Roles
                     cmbRole.ItemsSource = context.Roles.ToList();
                     if (cmbRole.Items.Count > 0)
                     {
@@ -34,12 +45,16 @@ namespace Registration.Pages
             }
             catch (Exception ex)
             {
+                // Информирование пользователя в случае ошибки подключения к БД
                 lblMessage.Text = $"Ошибка загрузки ролей: {ex.Message}";
                 lblMessage.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
                 lblMessage.Visibility = Visibility.Visible;
             }
         }
 
+        /// <summary>
+        /// Обработчик изменения выбора роли в выпадающем списке.
+        /// </summary>
         private void CmbRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selected = cmbRole.SelectedItem as Roles;
@@ -51,8 +66,13 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Обработчик события нажатия на кнопку регистрации. 
+        /// Выполняет сбор данных, валидацию, хеширование пароля и сохранение в БД.
+        /// </summary>
         private void BtnRegister_Click(object sender, RoutedEventArgs e)
         {
+            // 1. Предварительная проверка выбора роли и ввода пароля
             var selectedRole = cmbRole.SelectedItem as Roles;
             if (selectedRole == null)
             {
@@ -67,6 +87,7 @@ namespace Registration.Pages
                 return;
             }
 
+            // 2. Создание ViewModel для передачи данных в валидатор
             var viewModel = new UserViewModel
             {
                 Login = txtLogin.Text.Trim(),
@@ -80,6 +101,7 @@ namespace Registration.Pages
                 Status = (cmbStatus.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Активен"
             };
 
+            // 3. Вызов бизнес-логики валидации (UserViewModelValidator)
             try
             {
                 var validator = new UserViewModelValidator();
@@ -87,6 +109,7 @@ namespace Registration.Pages
 
                 if (errors.Count > 0)
                 {
+                    // Сбор всех ошибок валидации в одну строку для вывода
                     string errorMessage = string.Join("\n", errors.Select(er =>
                         $"{(er.MemberNames.Any() ? $"{string.Join(", ", er.MemberNames)}: " : "")}{er.ErrorMessage}"));
 
@@ -100,16 +123,19 @@ namespace Registration.Pages
                 return;
             }
 
+            // 4. Сохранение данных в базу данных
             try
             {
                 using (var context = new BeermageEntities1())
                 {
+                    // Проверка уникальности логина
                     if (context.Users.Any(u => u.Login == viewModel.Login))
                     {
                         MessageBox.Show("Пользователь с таким логином уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
+                    // Создание сущности БД и хеширование пароля
                     var newUser = new Users
                     {
                         Login = viewModel.Login,
@@ -121,13 +147,16 @@ namespace Registration.Pages
                         Position = viewModel.Position,
                         RoleID = viewModel.RoleID,
                         Status = viewModel.Status,
+                        // Пароль сохраняется исключительно в виде SHA-256 хеша
                         PasswordHash = PasswordHasher.ComputeSha256Hash(password)
                     };
 
                     context.Users.Add(newUser);
-                    context.SaveChanges();
+                    context.SaveChanges(); // Коммит транзакции в БД
 
                     MessageBox.Show("Пользователь успешно зарегистрирован!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Переход на страницу входа после успешного завершения
                     NavigationService?.Navigate(new AuthPage());
                 }
             }
@@ -137,6 +166,9 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Переход на страницу авторизации для уже зарегистрированных пользователей.
+        /// </summary>
         private void BtnGoToLogin_Click(object sender, RoutedEventArgs e)
         {
             NavigationService?.Navigate(new AuthPage());

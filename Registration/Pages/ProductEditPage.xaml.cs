@@ -8,11 +8,18 @@ using Registration.Model;
 
 namespace Registration.Pages
 {
+    /// <summary>
+    /// Логика взаимодействия для ProductEditPage.xaml.
+    /// Страница предназначена для создания новых и редактирования существующих товаров.
+    /// </summary>
     public partial class ProductEditPage : Page
     {
         private Products _product;
         private string _selectedImagePath;
 
+        /// <summary>
+        /// Свойство зависимости для хранения и отображения пути к изображению товара.
+        /// </summary>
         public string ImagePath
         {
             get => (string)GetValue(ImagePathProperty);
@@ -23,6 +30,10 @@ namespace Registration.Pages
             DependencyProperty.Register("ImagePath", typeof(string), typeof(ProductEditPage),
                 new PropertyMetadata("/Images/no_product.png"));
 
+        /// <summary>
+        /// Конструктор страницы редактирования товара.
+        /// </summary>
+        /// <param name="product">Объект товара для редактирования или null для создания нового.</param>
         public ProductEditPage(Products product)
         {
             InitializeComponent();
@@ -30,9 +41,14 @@ namespace Registration.Pages
             LoadCategories();
             LoadBeverageTypes();
             LoadData();
+
+            // Установка заголовка в зависимости от режима (добавление/редактирование)
             Title = _product == null ? "Добавление товара" : "Редактирование товара";
         }
 
+        /// <summary>
+        /// Загружает список категорий из базы данных для выпадающего списка.
+        /// </summary>
         private void LoadCategories()
         {
             using (var db = new BeermageEntities1())
@@ -42,6 +58,9 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Загружает типы напитков из базы данных для выпадающего списка.
+        /// </summary>
         private void LoadBeverageTypes()
         {
             using (var db = new BeermageEntities1())
@@ -51,6 +70,9 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Заполняет поля формы данными редактируемого товара.
+        /// </summary>
         private void LoadData()
         {
             if (_product != null)
@@ -63,6 +85,7 @@ namespace Registration.Pages
                 CmbCategory.SelectedValue = _product.CategoryID;
                 CmbBeverageType.SelectedValue = _product.BeverageTypeID;
 
+                // Если фото отсутствует, используем стандартную заглушку
                 ImagePath = _product.PhotoPath ?? "/Images/no_product.png";
             }
             else
@@ -72,6 +95,9 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Открывает диалоговое окно для выбора изображения товара на диске.
+        /// </summary>
         private void BtnSelectImage_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new Microsoft.Win32.OpenFileDialog();
@@ -87,8 +113,13 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Выполняет валидацию введенных данных и сохраняет товар в базу данных.
+        /// Включает логику копирования файла изображения в директорию приложения.
+        /// </summary>
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
+            // --- Проверки валидности данных ---
             if (string.IsNullOrWhiteSpace(TxtName.Text))
             {
                 MessageBox.Show("Название товара обязательно.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -132,6 +163,7 @@ namespace Registration.Pages
                 {
                     Products productToSave;
 
+                    // Определение: создание нового товара или поиск существующего для обновления
                     if (_product == null)
                     {
                         productToSave = new Products();
@@ -147,6 +179,7 @@ namespace Registration.Pages
                         }
                     }
 
+                    // Присвоение значений из элементов интерфейса
                     productToSave.Name = TxtName.Text.Trim();
                     productToSave.Description = string.IsNullOrWhiteSpace(TxtDescription.Text) ? null : TxtDescription.Text.Trim();
                     productToSave.Price = price;
@@ -155,13 +188,18 @@ namespace Registration.Pages
                     productToSave.CategoryID = selectedCategory.CategoryID;
                     productToSave.BeverageTypeID = selectedBeverageType.BeverageTypeID;
 
+                    // Логика обработки изображения
                     if (!string.IsNullOrEmpty(_selectedImagePath) && File.Exists(_selectedImagePath))
                     {
+                        // Формирование уникального имени файла
                         string fileName = $"product_{(productToSave.ProductID == 0 ? DateTime.Now.Ticks : productToSave.ProductID)}_{Path.GetFileName(_selectedImagePath)}";
                         string assetsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+
+                        // Создание папки, если она не существует
                         Directory.CreateDirectory(assetsFolder);
                         string destinationPath = Path.Combine(assetsFolder, fileName);
 
+                        // Копирование файла в ресурсы приложения
                         File.Copy(_selectedImagePath, destinationPath, true);
                         productToSave.PhotoPath = $"Images/{fileName}";
 
@@ -171,13 +209,8 @@ namespace Registration.Pages
                     {
                         productToSave.PhotoPath = _product.PhotoPath;
                     }
-                    else
-                    {
-                        productToSave.PhotoPath = null;
-                        ImagePath = "/Images/no_product.png";
-                    }
 
-                    db.SaveChanges();
+                    db.SaveChanges(); // Коммит изменений в БД
                 }
 
                 MessageBox.Show("Товар успешно сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -189,6 +222,9 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Сбрасывает введенные данные или возвращает форму к исходному состоянию товара.
+        /// </summary>
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
             if (_product == null)
@@ -204,7 +240,7 @@ namespace Registration.Pages
             }
             else
             {
-                LoadData();
+                LoadData(); // Перезагрузка исходных данных из объекта
             }
         }
     }

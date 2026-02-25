@@ -9,8 +9,15 @@ using Registration.Model;
 
 namespace Registration.Pages
 {
+    /// <summary>
+    /// Логика взаимодействия для UserListPage.xaml.
+    /// Представляет собой страницу со списком всех пользователей, функциями поиска, фильтрации и управления записями.
+    /// </summary>
     public partial class UserListPage : Page
     {
+        /// <summary>
+        /// Локальный кэш списка пользователей для обеспечения быстрой фильтрации без повторных запросов к БД.
+        /// </summary>
         private List<Users> _allUsers = new List<Users>();
 
         public UserListPage()
@@ -19,20 +26,28 @@ namespace Registration.Pages
             this.Loaded += UserListPage_Loaded;
         }
 
+        /// <summary>
+        /// Обработчик события загрузки страницы. Инициирует получение данных из БД.
+        /// </summary>
         private void UserListPage_Loaded(object sender, RoutedEventArgs e)
         {
             LoadData();
         }
 
+        /// <summary>
+        /// Извлекает данные пользователей и ролей из базы данных, настраивает контекст и заполняет элементы управления.
+        /// </summary>
         private void LoadData()
         {
             try
             {
                 using (var context = new BeermageEntities1())
                 {
+                    // Оптимизация Entity Framework для ускорения загрузки (без отслеживания изменений и прокси)
                     context.Configuration.ProxyCreationEnabled = false;
                     context.Configuration.LazyLoadingEnabled = false;
 
+                    // Загрузка пользователей вместе с их ролями
                     var users = context.Users
                                        .Include(u => u.Roles)
                                        .AsNoTracking()
@@ -45,10 +60,10 @@ namespace Registration.Pages
                         lvUsers.ItemsSource = users;
                     }
 
+                    // Настройка фильтра ролей
                     var roles = context.Roles.AsNoTracking().ToList();
 
                     cmbRolesFilter.SelectionChanged -= cmbRolesFilter_SelectionChanged;
-
                     cmbRolesFilter.Items.Clear();
                     cmbRolesFilter.Items.Add(new ComboBoxItem { Content = "Все роли", Tag = "-1" });
 
@@ -61,7 +76,6 @@ namespace Registration.Pages
                         });
                     }
                     cmbRolesFilter.SelectedIndex = 0;
-
                     cmbRolesFilter.SelectionChanged += cmbRolesFilter_SelectionChanged;
                 }
             }
@@ -71,6 +85,9 @@ namespace Registration.Pages
             }
         }
 
+        /// <summary>
+        /// Выполняет фильтрацию списка пользователей по введенному тексту (логин, имя, почта) и выбранной роли.
+        /// </summary>
         private void FilterUsers()
         {
             if (lvUsers == null || cmbRolesFilter == null || txtSearch == null)
@@ -80,6 +97,7 @@ namespace Registration.Pages
             var selectedItem = cmbRolesFilter.SelectedItem as ComboBoxItem;
             string selectedTag = selectedItem?.Tag?.ToString() ?? "-1";
 
+            // Применение условий фильтрации к коллекции в памяти
             var filtered = _allUsers.Where(u =>
                 (string.IsNullOrEmpty(searchText) ||
                  (u.Login != null && u.Login.ToLower().Contains(searchText)) ||
@@ -92,24 +110,36 @@ namespace Registration.Pages
             lvUsers.ItemsSource = filtered;
         }
 
+        // Обработчики событий ввода и выбора для мгновенного обновления списка
         private void txtSearch_KeyUp(object sender, System.Windows.Input.KeyEventArgs e) => FilterUsers();
-
         private void cmbRolesFilter_SelectionChanged(object sender, SelectionChangedEventArgs e) => FilterUsers();
 
+        /// <summary>
+        /// Переход на страницу добавления нового пользователя.
+        /// </summary>
         private void btnAdd_Click(object sender, RoutedEventArgs e) => NavigationService.Navigate(new UserEditPage(null));
 
+        /// <summary>
+        /// Обработчик двойного клика по строке списка для редактирования выбранного пользователя.
+        /// </summary>
         private void lvUsers_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (lvUsers.SelectedItem is Users user)
                 NavigationService.Navigate(new UserEditPage(user));
         }
 
+        /// <summary>
+        /// Команда контекстного меню для изменения данных пользователя.
+        /// </summary>
         private void MenuItem_Edit_Click(object sender, RoutedEventArgs e)
         {
             if (lvUsers.SelectedItem is Users selectedUser)
                 NavigationService.Navigate(new UserEditPage(selectedUser));
         }
 
+        /// <summary>
+        /// Удаляет выбранного пользователя из базы данных после подтверждения.
+        /// </summary>
         private void MenuItem_Delete_Click(object sender, RoutedEventArgs e)
         {
             if (!(lvUsers.SelectedItem is Users selectedUser)) return;
@@ -130,7 +160,7 @@ namespace Registration.Pages
                         {
                             context.Users.Remove(user);
                             context.SaveChanges();
-                            LoadData();
+                            LoadData(); // Перезагрузка актуального списка
                         }
                     }
                 }
@@ -141,8 +171,6 @@ namespace Registration.Pages
             }
         }
 
-        private void lvUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-        }
+        private void lvUsers_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
     }
 }
