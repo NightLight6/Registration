@@ -1,6 +1,3 @@
-using Registration.Helpers;
-using Registration.Model;
-using Registration.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Data.Entity;
 using System.Windows.Threading;
+using Registration.Model;
+using Registration.Services;
+using Registration.Helpers;
 
 namespace Registration.Pages
 {
@@ -243,6 +243,41 @@ namespace Registration.Pages
                     spForgotPasswordEmail.Visibility = Visibility.Collapsed;
                     spRecoveryCode.Visibility = Visibility.Visible;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Переход к панели ввода Email для восстановления пароля.
+        /// </summary>
+        private void BtnForgotPassword_Click(object sender, RoutedEventArgs e)
+        {
+            spMainAuth.Visibility = Visibility.Collapsed;
+            spForgotPasswordEmail.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Проверка 4-значного кода, присланного на почту для восстановления пароля.
+        /// </summary>
+        private void BtnConfirmRecoveryCode_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string inputCode = tbRecoveryCode.Text.Trim();
+
+                // Проверяем код по Email, который мы сохранили в _currentRecoveryEmail
+                if (CodeStorage.ValidateCode(_currentRecoveryEmail, inputCode))
+                {
+                    spRecoveryCode.Visibility = Visibility.Collapsed;
+                    spNewPassword.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    MessageBox.Show("Неверный код восстановления или его срок действия истек.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при проверке кода: {ex.Message}");
             }
         }
 

@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using System.Data.Entity;
 using Registration.Model;
+using System.Windows.Documents;
 
 namespace Registration.Pages
 {
@@ -170,7 +171,35 @@ namespace Registration.Pages
                 }
             }
         }
+        private void PrintListButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                FlowDocument doc = flowDocumentReader.Document;
 
+                if (doc == null)
+                {
+                  MessageBox.Show("Документ не найден.");
+            return;
+                }
+
+                PrintDialog printDialog = new PrintDialog();
+
+                doc.PagePadding = new Thickness(50);
+                doc.ColumnGap = 0;
+                doc.ColumnWidth = printDialog.PrintableAreaWidth;
+
+                 if (printDialog.ShowDialog() == true)
+                 {
+                    IDocumentPaginatorSource idpSource = doc;
+                    printDialog.PrintDocument(idpSource.DocumentPaginator, "Список сотрудников");
+                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при подготовке к печати: {ex.Message}");
+            }
+        }
         private void lvUsers_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
     }
 }

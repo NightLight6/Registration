@@ -15,7 +15,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
         <Border Grid.Row="0"
                 Background="{StaticResource DarkSurface}" 
                 CornerRadius="12" 
@@ -33,7 +32,6 @@
                        Foreground="{StaticResource TextPrimary}"/>
         </Border>
 
-        <!-- Каталог товаров -->
         <Border Grid.Row="1" 
                 Background="{StaticResource DarkSurface}" 
                 CornerRadius="12" 
@@ -43,7 +41,30 @@
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.2" Color="Black"/>
             </Border.Effect>
-            <ListView Name="LvProducts" Background="Transparent">
+
+            <ListView Name="LvProducts" 
+                      Background="Transparent"
+                      BorderThickness="0"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      VirtualizingPanel.IsVirtualizing="False">
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="{StaticResource BorderColor}" 
@@ -51,7 +72,8 @@
                                 CornerRadius="12" 
                                 Margin="10" 
                                 Padding="25" 
-                                Background="{StaticResource DarkCard}">
+                                Background="{StaticResource DarkCard}"
+                                MinHeight="160">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.15" Color="Black"/>
                             </Border.Effect>
@@ -61,7 +83,6 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Фото товара -->
                                 <Border Grid.Column="0" 
                                         Width="120" 
                                         Height="120" 
@@ -81,7 +102,6 @@
                                     </Image>
                                 </Border>
 
-                                <!-- Информация о товаре -->
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Name}" 
                                                FontWeight="Bold" 
@@ -99,7 +119,7 @@
                                                    FontWeight="SemiBold" 
                                                    Foreground="{StaticResource TextSecondary}"
                                                    FontSize="15"/>
-                                        <TextBlock Text="{Binding ProductCategories.CategoryName}" 
+                                        <TextBlock Text="{Binding ProductCategories.CategoryName, TargetNullValue='Без категории'}" 
                                                    Foreground="{StaticResource TextPrimary}"
                                                    FontSize="15"/>
                                     </StackPanel>

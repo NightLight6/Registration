@@ -94,7 +94,7 @@
                         </Border>
                         
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <Button Content="📷 Выбрать фото..." 
+                            <Button Content="Выбрать фото..." 
                                     Click="BtnSelectImage_Click" 
                                     Padding="18,12" 
                                     Width="200"
@@ -107,7 +107,6 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- Название -->
                     <TextBlock Text="Название товара*" 
                                FontWeight="SemiBold" 
                                Margin="0,0,0,10" 
@@ -119,7 +118,6 @@
                              Height="48"
                              FontSize="15"/>
 
-                    <!-- Описание -->
                     <TextBlock Text="Описание" 
                                FontWeight="SemiBold" 
                                Margin="0,0,0,10" 
@@ -133,7 +131,6 @@
                              TextWrapping="Wrap"
                              FontSize="14"/>
 
-                    <!-- Категория и тип напитка -->
                     <Grid Margin="0,0,0,25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -166,7 +163,6 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- Цены -->
                     <Grid Margin="0,0,0,25">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -199,7 +195,6 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- Доступность -->
                     <CheckBox x:Name="ChkIsAvailable" 
                               Content="Товар доступен для продажи" 
                               Margin="0,0,0,30" 
@@ -207,9 +202,8 @@
                               FontSize="14"
                               FontWeight="SemiBold"/>
 
-                    <!-- Кнопки -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="💾 Сохранить" 
+                        <Button Content="Сохранить" 
                                 Click="BtnSave_Click" 
                                 Padding="20,12" 
                                 Margin="0,0,15,0" 
@@ -217,7 +211,7 @@
                                 Height="50"
                                 FontSize="15"
                                 FontWeight="Bold"/>
-                        <Button Content="🔄 Очистить" 
+                        <Button Content="Очистить" 
                                 Click="BtnClear_Click" 
                                 Padding="20,12" 
                                 Width="140"

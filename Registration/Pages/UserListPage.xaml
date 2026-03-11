@@ -37,6 +37,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Поиск:" 
@@ -87,50 +88,46 @@
                         Margin="20,0,0,0"
                         FontSize="14"
                         FontWeight="Bold"/>
+                
+                <Button Content="Печать списка" 
+                Grid.Column="5" 
+                Click="PrintListButton_Click" 
+                Padding="18,10" 
+                Width="150" 
+                Margin="10,0,0,0" 
+                FontSize="14" 
+                FontWeight="Bold"/>
             </Grid>
         </Border>
 
         <Border Grid.Row="1" 
-                Background="{StaticResource DarkSurface}" 
-                CornerRadius="12" 
-                BorderBrush="{StaticResource BorderColor}" 
-                BorderThickness="1"
-                Padding="5">
-            <ListView Name="lvUsers" 
-                      Background="Transparent"
-                      BorderThickness="0"
-                      MouseDoubleClick="lvUsers_MouseDoubleClick"
-                      SelectionChanged="lvUsers_SelectionChanged">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Фото" Width="80">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Border Width="50" Height="50" CornerRadius="25" ClipToBounds="True">
-                                        <Image Stretch="UniformToFill" 
-                       Source="{Binding ImagePath, Converter={StaticResource PhotoConverter}}"/>
-                                    </Border>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+        Background="{StaticResource DarkSurface}" 
+        CornerRadius="12" 
+        BorderBrush="{StaticResource BorderColor}" 
+        BorderThickness="1" 
+        Padding="5">
 
-                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding UserID}" Width="50"/>
-                        <GridViewColumn Header="Логин" DisplayMemberBinding="{Binding Login}" Width="120"/>
-                        <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Name}" Width="120"/>
-                        <GridViewColumn Header="Фамилия" DisplayMemberBinding="{Binding Surname}" Width="120"/>
-                        <GridViewColumn Header="Роль" DisplayMemberBinding="{Binding Roles.RoleName}" Width="150"/>
-                        <GridViewColumn Header="Email" DisplayMemberBinding="{Binding Email}" Width="180"/>
-                        <GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Status}" Width="100"/>
-                    </GridView>
-                </ListView.View>
-
-                <ListView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Редактировать" Click="MenuItem_Edit_Click"/>
-                        <MenuItem Header="Удалить" Click="MenuItem_Delete_Click"/>
-                    </ContextMenu>
-                </ListView.ContextMenu>
-            </ListView>
+            <FlowDocumentReader x:Name="flowDocumentReader" ViewingMode="Scroll">
+                <FlowDocument PageWidth="Auto">
+                    <BlockUIContainer>
+                        <ListView Name="lvUsers" 
+                          Background="Transparent"
+                          BorderThickness="0"
+                          MouseDoubleClick="lvUsers_MouseDoubleClick">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding UserID}" Width="50"/>
+                                    <GridViewColumn Header="Логин" DisplayMemberBinding="{Binding Login}" Width="120"/>
+                                    <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Name}" Width="120"/>
+                                    <GridViewColumn Header="Фамилия" DisplayMemberBinding="{Binding Surname}" Width="120"/>
+                                    <GridViewColumn Header="Роль" DisplayMemberBinding="{Binding Roles.RoleName}" Width="150"/>
+                                    <GridViewColumn Header="Email" DisplayMemberBinding="{Binding Email}" Width="180"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </BlockUIContainer>
+                </FlowDocument>
+            </FlowDocumentReader>
         </Border>
     </Grid>
 </Page>

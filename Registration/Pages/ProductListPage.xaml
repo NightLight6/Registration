@@ -15,137 +15,279 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Панель управления -->
         <Border Grid.Row="0" 
                 Background="{StaticResource DarkSurface}" 
                 CornerRadius="12" 
-                Padding="20" 
+                Padding="25" 
                 Margin="0,0,0,20"
                 BorderBrush="{StaticResource BorderColor}"
                 BorderThickness="1">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.2" Color="Black"/>
             </Border.Effect>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="+ Добавить товар" 
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Печать списка" 
+                        Click="PrintListButton_Click" 
+                        Padding="25,12" 
+                        MinWidth="180"
+                        Height="48"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Margin="0,0,15,0"
+                        Background="{StaticResource SuccessColor}"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" 
+                                    CornerRadius="8" 
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Content="Добавить товар" 
                         Click="BtnAdd_Click" 
-                        Padding="20,12" 
-                        Width="200"
-                        Height="53"
-                        FontSize="15"
-                        FontWeight="Bold"/>
+                        Padding="25,12" 
+                        MinWidth="180"
+                        Height="48"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Background="{StaticResource WarningColor}"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" 
+                                    CornerRadius="8" 
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </StackPanel>
         </Border>
 
-        <!-- Список товаров -->
         <Border Grid.Row="1" 
                 Background="{StaticResource DarkSurface}" 
                 CornerRadius="12" 
                 BorderBrush="{StaticResource BorderColor}" 
                 BorderThickness="1"
-                Padding="10">
+                Padding="15">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.2" Color="Black"/>
             </Border.Effect>
-            <ListView Name="LvProducts" Background="Transparent">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="{StaticResource BorderColor}" 
-                                BorderThickness="1" 
-                                CornerRadius="12" 
-                                Margin="8" 
-                                Padding="20" 
-                                Background="{StaticResource DarkCard}">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.15" Color="Black"/>
-                            </Border.Effect>
+
+            <FlowDocumentReader x:Name="flowDocumentReader" 
+                                ViewingMode="Scroll"
+                                Background="Transparent"
+                                Zoom="100"
+                                HorizontalAlignment="Center">
+                <FlowDocument PageWidth="1300" 
+                              FontFamily="Segoe UI"
+                              Foreground="{StaticResource TextPrimary}"
+                              Background="{StaticResource DarkCard}"
+                              IsHyphenationEnabled="False"
+                              TextAlignment="Center"
+                              PagePadding="20">
+
+                    <Section Margin="0,0,0,30">
+                        <BlockUIContainer>
+                            <Border BorderBrush="{StaticResource SuccessColor}" BorderThickness="0,0,0,3" Padding="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="BEERMAGE" 
+                                               FontSize="32" 
+                                               FontWeight="Bold" 
+                                               Foreground="{StaticResource TextPrimary}"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock Text="ПРАЙС-ЛИСТ ТОВАРОВ" 
+                                               FontSize="22" 
+                                               FontWeight="Bold" 
+                                               Foreground="{StaticResource TextSecondary}"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,12"/>
+                                    <TextBlock Name="lblDate"
+                                               FontSize="12" 
+                                               Foreground="{StaticResource TextSecondary}"
+                                               HorizontalAlignment="Center"
+                                               FontStyle="Italic"/>
+                                </StackPanel>
+                            </Border>
+                        </BlockUIContainer>
+                    </Section>
+
+                    <Section Margin="0,0,0,20">
+                        <BlockUIContainer>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="120"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Фото товара -->
-                                <Border Grid.Column="0" 
-                                        Width="100" 
-                                        Height="100" 
-                                        CornerRadius="10" 
-                                        Background="{StaticResource DarkSurface}"
-                                        BorderBrush="{StaticResource BorderColor}"
-                                        BorderThickness="1"
-                                        Margin="0,0,20,0">
-                                    <Image Source="{Binding PhotoPath, Converter={StaticResource ImagePathToImageSourceConverter}}" 
-                                           Width="98" 
-                                           Height="98" 
-                                           Stretch="UniformToFill"
-                                           ClipToBounds="True">
-                                        <Image.Clip>
-                                            <RectangleGeometry Rect="0,0,98,98" RadiusX="9" RadiusY="9"/>
-                                        </Image.Clip>
-                                    </Image>
+                                <Border Grid.Column="0" Background="{StaticResource WarningColor}" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" Padding="10,8">
+                                    <TextBlock Text="Фото" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
                                 </Border>
-
-                                <!-- Информация о товаре -->
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}" 
-                                               FontWeight="Bold" 
-                                               FontSize="20" 
-                                               Foreground="{StaticResource TextPrimary}" 
-                                               Margin="0,0,0,10"/>
-                                    <TextBlock Text="{Binding Description}" 
-                                               TextWrapping="Wrap" 
-                                               Margin="0,0,0,12" 
-                                               Foreground="{StaticResource TextSecondary}"
-                                               FontSize="14"
-                                               MaxHeight="60"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                        <TextBlock Text="Категория: " 
-                                                   FontWeight="SemiBold" 
-                                                   Foreground="{StaticResource TextSecondary}"
-                                                   FontSize="14"/>
-                                        <TextBlock Text="{Binding ProductCategories.CategoryName}" 
-                                                   Foreground="{StaticResource TextPrimary}"
-                                                   FontSize="14"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding Price, StringFormat='Цена: {0:F2} руб.'}" 
-                                               FontSize="18" 
-                                               Foreground="{StaticResource SuccessColor}" 
-                                               FontWeight="Bold"/>
-                                </StackPanel>
-
-                                <!-- Кнопки действий -->
-                                <StackPanel Grid.Column="2" 
-                                            Orientation="Vertical" 
-                                            VerticalAlignment="Center"
-                                            Margin="20,0,0,0">
-                                    <Button Content="✏️ Редактировать" 
-                                            Tag="{Binding}" 
-                                            Click="BtnEdit_Click"
-                                            Background="{StaticResource WarningColor}" 
-                                            Foreground="White"
-                                            Padding="16,10" 
-                                            Margin="0,0,0,12"
-                                            Width="160"
-                                            Height="44"
-                                            FontSize="13"
-                                            FontWeight="SemiBold"/>
-                                    <Button Content="🗑️ Удалить" 
-                                            Tag="{Binding}" 
-                                            Click="BtnDelete_Click"
-                                            Background="{StaticResource ErrorColor}" 
-                                            Foreground="White"
-                                            Padding="16,10"
-                                            Width="160"
-                                            Height="44"
-                                            FontSize="13"
-                                            FontWeight="SemiBold"/>
-                                </StackPanel>
+                                <Border Grid.Column="1" Background="{StaticResource WarningColor}" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,1,1,1" Padding="10,8">
+                                    <TextBlock Text="Наименование" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
+                                </Border>
+                                <Border Grid.Column="2" Background="{StaticResource WarningColor}" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,1,1,1" Padding="10,8">
+                                    <TextBlock Text="Категория" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
+                                </Border>
+                                <Border Grid.Column="3" Background="{StaticResource WarningColor}" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,1,1,1" Padding="10,8">
+                                    <TextBlock Text="Описание" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
+                                </Border>
+                                <Border Grid.Column="4" Background="{StaticResource WarningColor}" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,1,1,1" Padding="10,8">
+                                    <TextBlock Text="Цена" FontWeight="Bold" Foreground="White" TextAlignment="Center"/>
+                                </Border>
                             </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                        </BlockUIContainer>
+                    </Section>
+
+                    <BlockUIContainer>
+                        <ListView Name="LvProducts" 
+                                  Background="Transparent" 
+                                  BorderThickness="0"
+                                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  VirtualizingPanel.IsVirtualizing="False"
+                                  HorizontalAlignment="Stretch">
+
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <ContentPresenter />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderColor}" 
+                                            BorderThickness="1,0,1,1" 
+                                            Margin="0,0,0,1" 
+                                            Padding="0" 
+                                            Background="{StaticResource DarkSurface}"
+                                            MouseRightButtonUp="Border_MouseRightButtonUp">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="120"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border Grid.Column="0" 
+                                                    Width="80" 
+                                                    Height="80" 
+                                                    CornerRadius="4" 
+                                                    Background="{StaticResource DarkBackground}"
+                                                    BorderBrush="{StaticResource BorderColor}"
+                                                    BorderThickness="1"
+                                                    Margin="10">
+                                                <Image Source="{Binding PhotoPath, Converter={StaticResource ImagePathToImageSourceConverter}}" 
+                                                       Width="78" 
+                                                       Height="78" 
+                                                       Stretch="UniformToFill"
+                                                       ClipToBounds="True">
+                                                    <Image.Clip>
+                                                        <RectangleGeometry Rect="0,0,78,78" RadiusX="3" RadiusY="3"/>
+                                                    </Image.Clip>
+                                                </Image>
+                                            </Border>
+
+                                            <Border Grid.Column="1" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
+                                                <TextBlock Text="{Binding Name}" 
+                                                           VerticalAlignment="Center"
+                                                           FontWeight="Bold" 
+                                                           FontSize="13" 
+                                                           Foreground="{StaticResource TextPrimary}" 
+                                                           Margin="8,0,8,0"
+                                                           TextAlignment="Center"
+                                                           TextWrapping="Wrap"/>
+                                            </Border>
+
+                                            <Border Grid.Column="2" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
+                                                <TextBlock Text="{Binding ProductCategories.CategoryName, TargetNullValue='—'}" 
+                                                           VerticalAlignment="Center"
+                                                           Foreground="{StaticResource TextSecondary}"
+                                                           FontSize="11"
+                                                           Margin="8,0,8,0"
+                                                           TextAlignment="Center"/>
+                                            </Border>
+
+                                            <Border Grid.Column="3" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
+                                                <TextBlock Text="{Binding Description}" 
+                                                           VerticalAlignment="Center"
+                                                           Foreground="{StaticResource TextSecondary}"
+                                                           FontSize="11"
+                                                           Margin="10,0,10,0"
+                                                           TextAlignment="Left"
+                                                           TextWrapping="Wrap"/>
+                                            </Border>
+
+                                            <Border Grid.Column="4" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
+                                                <TextBlock Text="{Binding Price, StringFormat={}{0:F2} ₽}" 
+                                                           VerticalAlignment="Center"
+                                                           Foreground="{StaticResource SuccessColor}"
+                                                           FontSize="14"
+                                                           FontWeight="Bold"
+                                                           Margin="8,0,8,0"
+                                                           TextAlignment="Center"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </BlockUIContainer>
+
+                    <Section Margin="0,30,0,0">
+                        <BlockUIContainer>
+                            <Border Background="{StaticResource DarkBackground}" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" CornerRadius="4" Padding="20,15">
+                                <StackPanel>
+                                    <TextBlock Text="Итого товаров:" 
+                                               FontSize="13" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextPrimary}"
+                                               Margin="0,0,0,5"/>
+                                    <TextBlock Name="lblTotal"
+                                               FontSize="12" 
+                                               Foreground="{StaticResource TextSecondary}"/>
+                                    <Border BorderBrush="{StaticResource BorderColor}" BorderThickness="0,1,0,0" Margin="0,10,0,0" Padding="0,8,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="Документ сформирован автоматически" 
+                                                       FontSize="10" 
+                                                       Foreground="{StaticResource TextSecondary}"/>
+                                            <TextBlock Text="© Beermage, 2026. Все права защищены." 
+                                                       FontSize="10" 
+                                                       Foreground="{StaticResource TextSecondary}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </BlockUIContainer>
+                    </Section>
+
+                </FlowDocument>
+            </FlowDocumentReader>
         </Border>
     </Grid>
 </Page>

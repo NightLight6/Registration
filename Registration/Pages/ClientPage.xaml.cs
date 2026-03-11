@@ -1,21 +1,31 @@
 ﻿using Registration.Model;
-using System.Windows;
+using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Data.Entity;
-using Registration.Services;
 using System.Windows.Navigation;
 
 namespace Registration.Pages
 {
     public partial class ClientPage : Page
     {
+        private Users _currentUser;
+        private string _roleName;
+
         public ClientPage(Users user, string roleName)
         {
             InitializeComponent();
-            if (roleName == "Менеджер" || roleName == "Администратор" || roleName == "Продавец")
+            _currentUser = user;
+            _roleName = roleName;
+            this.Loaded += ClientPage_Loaded;
+        }
+
+        private void ClientPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_roleName == "Менеджер" || _roleName == "Администратор" || _roleName == "Продавец")
             {
-                NavigationService.Navigate(new ProductListPage());
+                NavigationService?.Navigate(new ProductListPage());
             }
             else
             {
@@ -25,12 +35,20 @@ namespace Registration.Pages
 
         private void LoadProducts()
         {
-            using (var db = new BeermageEntities1())
+            try
             {
-                var products = db.Products
-                    .Include("ProductCategories")
-                    .ToList();
-                LvProducts.ItemsSource = products;
+                using (var db = new BeermageEntities1())
+                {
+                    var products = db.Products
+                        .Include(p => p.ProductCategories)
+                        .ToList();
+
+                    LvProducts.ItemsSource = products;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка БД: " + ex.Message + "\n" + ex.InnerException?.Message);
             }
         }
     }
