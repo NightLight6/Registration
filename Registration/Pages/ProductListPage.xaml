@@ -84,39 +84,41 @@
             </Border.Effect>
 
             <FlowDocumentReader x:Name="flowDocumentReader" 
-                                ViewingMode="Scroll"
-                                Background="Transparent"
-                                Zoom="100"
-                                HorizontalAlignment="Center">
-                <FlowDocument PageWidth="1300" 
-                              FontFamily="Segoe UI"
-                              Foreground="{StaticResource TextPrimary}"
-                              Background="{StaticResource DarkCard}"
-                              IsHyphenationEnabled="False"
-                              TextAlignment="Center"
-                              PagePadding="20">
+                    ViewingMode="Scroll"
+                    Background="Transparent"
+                    Zoom="100"
+                    HorizontalAlignment="Center">
+                <FlowDocument PageWidth="1123" 
+                  PageHeight="794"
+                  FontFamily="Segoe UI"
+                  Foreground="{StaticResource TextPrimary}"
+                  Background="{StaticResource DarkCard}"
+                  ColumnWidth="1080"
+                  IsHyphenationEnabled="False"
+                  TextAlignment="Left"
+                  PagePadding="20">
 
                     <Section Margin="0,0,0,30">
                         <BlockUIContainer>
                             <Border BorderBrush="{StaticResource SuccessColor}" BorderThickness="0,0,0,3" Padding="0,0,0,20">
                                 <StackPanel>
                                     <TextBlock Text="BEERMAGE" 
-                                               FontSize="32" 
-                                               FontWeight="Bold" 
-                                               Foreground="{StaticResource TextPrimary}"
-                                               HorizontalAlignment="Center"
-                                               Margin="0,0,0,8"/>
+                                   FontSize="36" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource TextPrimary}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
                                     <TextBlock Text="ПРАЙС-ЛИСТ ТОВАРОВ" 
-                                               FontSize="22" 
-                                               FontWeight="Bold" 
-                                               Foreground="{StaticResource TextSecondary}"
-                                               HorizontalAlignment="Center"
-                                               Margin="0,0,0,12"/>
+                                   FontSize="24" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource TextPrimary}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,12"/>
                                     <TextBlock Name="lblDate"
-                                               FontSize="12" 
-                                               Foreground="{StaticResource TextSecondary}"
-                                               HorizontalAlignment="Center"
-                                               FontStyle="Italic"/>
+                                   FontSize="12" 
+                                   Foreground="{StaticResource TextSecondary}"
+                                   HorizontalAlignment="Center"
+                                   FontStyle="Italic"/>
                                 </StackPanel>
                             </Border>
                         </BlockUIContainer>
@@ -154,12 +156,11 @@
 
                     <BlockUIContainer>
                         <ListView Name="LvProducts" 
-                                  Background="Transparent" 
-                                  BorderThickness="0"
-                                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                  VirtualizingPanel.IsVirtualizing="False"
-                                  HorizontalAlignment="Stretch">
+                      Background="Transparent" 
+                      BorderThickness="0"
+                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      VirtualizingPanel.IsVirtualizing="False">
 
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
@@ -180,11 +181,11 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderBrush="{StaticResource BorderColor}" 
-                                            BorderThickness="1,0,1,1" 
-                                            Margin="0,0,0,1" 
-                                            Padding="0" 
-                                            Background="{StaticResource DarkSurface}"
-                                            MouseRightButtonUp="Border_MouseRightButtonUp">
+                                BorderThickness="1,0,1,1" 
+                                Margin="0,0,0,1" 
+                                Padding="0" 
+                                Background="{StaticResource DarkSurface}"
+                                MouseRightButtonUp="Border_MouseRightButtonUp">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="100"/>
@@ -195,18 +196,18 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Border Grid.Column="0" 
-                                                    Width="80" 
-                                                    Height="80" 
-                                                    CornerRadius="4" 
-                                                    Background="{StaticResource DarkBackground}"
-                                                    BorderBrush="{StaticResource BorderColor}"
-                                                    BorderThickness="1"
-                                                    Margin="10">
+                                        Width="80" 
+                                        Height="80" 
+                                        CornerRadius="4" 
+                                        Background="{StaticResource DarkBackground}"
+                                        BorderBrush="{StaticResource BorderColor}"
+                                        BorderThickness="1"
+                                        Margin="10">
                                                 <Image Source="{Binding PhotoPath, Converter={StaticResource ImagePathToImageSourceConverter}}" 
-                                                       Width="78" 
-                                                       Height="78" 
-                                                       Stretch="UniformToFill"
-                                                       ClipToBounds="True">
+                                           Width="78" 
+                                           Height="78" 
+                                           Stretch="UniformToFill"
+                                           ClipToBounds="True">
                                                     <Image.Clip>
                                                         <RectangleGeometry Rect="0,0,78,78" RadiusX="3" RadiusY="3"/>
                                                     </Image.Clip>
@@ -215,42 +216,42 @@
 
                                             <Border Grid.Column="1" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
                                                 <TextBlock Text="{Binding Name}" 
-                                                           VerticalAlignment="Center"
-                                                           FontWeight="Bold" 
-                                                           FontSize="13" 
-                                                           Foreground="{StaticResource TextPrimary}" 
-                                                           Margin="8,0,8,0"
-                                                           TextAlignment="Center"
-                                                           TextWrapping="Wrap"/>
+                                               VerticalAlignment="Center"
+                                               FontWeight="Bold" 
+                                               FontSize="13" 
+                                               Foreground="{StaticResource TextPrimary}" 
+                                               Margin="8,0,8,0"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"/>
                                             </Border>
 
                                             <Border Grid.Column="2" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
                                                 <TextBlock Text="{Binding ProductCategories.CategoryName, TargetNullValue='—'}" 
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{StaticResource TextSecondary}"
-                                                           FontSize="11"
-                                                           Margin="8,0,8,0"
-                                                           TextAlignment="Center"/>
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextPrimary}"
+                                               FontSize="11"
+                                               Margin="8,0,8,0"
+                                               TextAlignment="Center"/>
                                             </Border>
 
                                             <Border Grid.Column="3" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
                                                 <TextBlock Text="{Binding Description}" 
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{StaticResource TextSecondary}"
-                                                           FontSize="11"
-                                                           Margin="10,0,10,0"
-                                                           TextAlignment="Left"
-                                                           TextWrapping="Wrap"/>
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextPrimary}"
+                                               FontSize="11"
+                                               Margin="10,0,10,0"
+                                               TextAlignment="Left"
+                                               TextWrapping="Wrap"/>
                                             </Border>
 
                                             <Border Grid.Column="4" BorderBrush="{StaticResource BorderColor}" BorderThickness="1,0,1,0" Background="{StaticResource DarkBackground}">
                                                 <TextBlock Text="{Binding Price, StringFormat={}{0:F2} ₽}" 
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{StaticResource SuccessColor}"
-                                                           FontSize="14"
-                                                           FontWeight="Bold"
-                                                           Margin="8,0,8,0"
-                                                           TextAlignment="Center"/>
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource SuccessColor}"
+                                               FontSize="13"
+                                               FontWeight="Bold"
+                                               Margin="8,0,8,0"
+                                               TextAlignment="Center"/>
                                             </Border>
                                         </Grid>
                                     </Border>
@@ -264,21 +265,21 @@
                             <Border Background="{StaticResource DarkBackground}" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" CornerRadius="4" Padding="20,15">
                                 <StackPanel>
                                     <TextBlock Text="Итого товаров:" 
-                                               FontSize="13" 
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource TextPrimary}"
-                                               Margin="0,0,0,5"/>
+                                   FontSize="13" 
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   Margin="0,0,0,5"/>
                                     <TextBlock Name="lblTotal"
-                                               FontSize="12" 
-                                               Foreground="{StaticResource TextSecondary}"/>
+                                   FontSize="12" 
+                                   Foreground="{StaticResource TextSecondary}"/>
                                     <Border BorderBrush="{StaticResource BorderColor}" BorderThickness="0,1,0,0" Margin="0,10,0,0" Padding="0,8,0,0">
                                         <StackPanel>
                                             <TextBlock Text="Документ сформирован автоматически" 
-                                                       FontSize="10" 
-                                                       Foreground="{StaticResource TextSecondary}"/>
+                                           FontSize="10" 
+                                           Foreground="{StaticResource TextSecondary}"/>
                                             <TextBlock Text="© Beermage, 2026. Все права защищены." 
-                                                       FontSize="10" 
-                                                       Foreground="{StaticResource TextSecondary}"/>
+                                           FontSize="10" 
+                                           Foreground="{StaticResource TextSecondary}"/>
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>

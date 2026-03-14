@@ -179,8 +179,8 @@ namespace Registration.Pages
 
                 if (doc == null)
                 {
-                  MessageBox.Show("Документ не найден.");
-            return;
+                    MessageBox.Show("Документ не найден.");
+                    return;
                 }
 
                 PrintDialog printDialog = new PrintDialog();
@@ -189,11 +189,11 @@ namespace Registration.Pages
                 doc.ColumnGap = 0;
                 doc.ColumnWidth = printDialog.PrintableAreaWidth;
 
-                 if (printDialog.ShowDialog() == true)
-                 {
+                if (printDialog.ShowDialog() == true)
+                {
                     IDocumentPaginatorSource idpSource = doc;
                     printDialog.PrintDocument(idpSource.DocumentPaginator, "Список сотрудников");
-                 }
+                }
             }
             catch (Exception ex)
             {

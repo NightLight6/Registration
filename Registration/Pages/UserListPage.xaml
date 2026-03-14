@@ -88,7 +88,7 @@
                         Margin="20,0,0,0"
                         FontSize="14"
                         FontWeight="Bold"/>
-                
+
                 <Button Content="Печать списка" 
                 Grid.Column="5" 
                 Click="PrintListButton_Click" 

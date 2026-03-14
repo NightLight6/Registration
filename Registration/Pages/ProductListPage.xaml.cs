@@ -45,11 +45,24 @@ namespace Registration.Pages
 
         private void PrintListButton_Click(object sender, RoutedEventArgs e)
         {
+            using (var db = new BeermageEntities1())
+            {
+                var products = db.Products.Include(p => p.ProductCategories).ToList();
+
+                var lblDate = FindName("lblDate") as TextBlock;
+                if (lblDate != null)
+                    lblDate.Text = $"Дата формирования: {DateTime.Now:dd.MM.yyyy HH:mm}";
+
+                var lblTotal = FindName("lblTotal") as TextBlock;
+                if (lblTotal != null)
+                    lblTotal.Text = $"В прайс-листе: {products.Count} позиций";
+            }
+
             FlowDocument doc = flowDocumentReader.Document;
 
             if (doc == null)
             {
-                MessageBox.Show("Документ для печати не найден.");
+                MessageBox.Show("Документ не найден.");
                 return;
             }
 
@@ -61,10 +74,9 @@ namespace Registration.Pages
             if (printDialog.ShowDialog() == true)
             {
                 IDocumentPaginatorSource idpSource = doc;
-
                 printDialog.PrintDocument(
                     idpSource.DocumentPaginator,
-                    "Список товаров — Beermage");
+                    "Прайс-лист товаров — Beermage");
 
                 MessageBox.Show("Документ успешно отправлен на печать!",
                                "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
