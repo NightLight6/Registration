@@ -201,5 +201,18 @@ namespace Registration.Pages
             }
         }
         private void lvUsers_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+
+        private void BtnEmploymentContract_Click(object sender, RoutedEventArgs e)
+        {
+            if (lvUsers.SelectedItem is Users selectedEmployee)
+            {
+                NavigationService?.Navigate(new EmploymentContractPage(selectedEmployee));
+            }
+            else
+            {
+                MessageBox.Show("Пожалуйста, выберите сотрудника из списка.",
+                    "Информация", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
     }
 }
